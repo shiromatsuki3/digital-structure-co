@@ -706,8 +706,73 @@ footer { background:var(--bg);border-top:1px solid var(--border);padding:2.5rem 
 ═══════════════════════════════════════ -->
 <script>
 // ─── CONFIG — Replace with your Supabase project values ──────────────
-const SUPABASE_URL = 'https://haiddewunhbstqfoyluz.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhhaWRkZXd1bmhic3RxZm95bHV6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3MTE1MDEsImV4cCI6MjA5NTI4NzUwMX0.R4vlSkvYxgJMlTYyEb_z9KIzOg_OsCk3TI8-jcEqbcs';
+const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+const SUPABASE_READY = SUPABASE_URL !== 'YOUR_SUPABASE_URL' && SUPABASE_ANON_KEY !== 'YOUR_SUPABASE_ANON_KEY';
+
+// ── CURSOR ─────────────────────────────────────────────────────────────
+const cur = document.getElementById('cursor');
+const ring = document.getElementById('cursorRing');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px';});
+(function animRing(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(animRing);})();
+
+// ── REVEAL — runs always, regardless of Supabase ──────────────────────
+const obs = new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');}),{threshold:.08});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+// ── TOAST ──────────────────────────────────────────────────────────────
+function showToast(msg, type='gold') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast ${type} show`;
+  setTimeout(()=>t.classList.remove('show'), 3500);
+}
+
+// ── SUPABASE GUARD ─────────────────────────────────────────────────────
+if (!SUPABASE_READY) {
+  // Show setup notice in reviews section
+  document.getElementById('authGate').innerHTML = `
+    <p style="color:var(--gold);font-family:'Syne',sans-serif;font-size:.8rem;letter-spacing:.1em;">
+      ⚙ Supabase not configured yet.<br>
+      <span style="color:var(--text-muted);font-weight:300;">Follow SETUP.md in the repo to enable the review system.</span>
+    </p>`;
+  document.getElementById('overallRating').textContent = '5.0';
+  document.getElementById('overallLabel').textContent = 'Rating — connect Supabase to go live';
+  document.getElementById('statRating').textContent = '5.0★';
+  document.getElementById('totalReviews').textContent = '—';
+  for(let n=1;n<=5;n++){
+    const bar=document.getElementById('bar'+n);
+    const pct=document.getElementById('pct'+n);
+    if(n===5&&bar){setTimeout(()=>bar.style.width='100%',400);}
+    if(pct)pct.textContent=n===5?'100%':'0%';
+  }
+  const os=document.getElementById('overallStars');
+  if(os)os.innerHTML='<span class="rs-star">★</span>'.repeat(5);
+  const ss=document.getElementById('statRatingStars');
+  if(ss)ss.innerHTML='<span class="stat-star">★</span>'.repeat(5);
+  document.getElementById('reviewsGrid').innerHTML='<div class="no-reviews" style="grid-column:1/-1">Reviews will appear here once Supabase is configured.</div>';
+  document.getElementById('reviewsCount').textContent='0 reviews';
+  // Stop here — no Supabase needed for rest of site
+  throw new Error('SUPABASE_PLACEHOLDER'); // stops this script block cleanly
+}
+</script>
+<script>
+// ── ONLY RUNS WHEN SUPABASE IS CONFIGURED ─────────────────────────────
+
+// ── STATE ──────────────────────────────────────────────────────────────
+let currentUser = null, currentProfile = null, allReviews = [], currentFilter = 'all', isAdmin = false;
+
+let sb;
+try {
+  sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    auth: { redirectTo: window.location.origin + window.location.pathname }
+  });
+} catch(e) {
+  console.error('Supabase init failed:', e);
+}
+const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
 // ─────────────────────────────────────────────────────────────────────
 
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
