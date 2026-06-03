@@ -35,6 +35,96 @@ nav { position:fixed;top:0;left:0;right:0;z-index:500;padding:1.5rem 4rem;displa
 .nav-cta { background:transparent;border:1px solid var(--gold-dim);color:var(--gold);padding:.55rem 1.5rem;font-family:'Syne',sans-serif;font-size:.75rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;text-decoration:none;transition:all .3s; }
 .nav-cta:hover { background:var(--gold);color:var(--bg); }
 
+/* ── CURRENCY SELECTOR ─────────────────────────────────────────────── */
+.currency-selector {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.currency-btn {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  padding: .42rem .85rem;
+  font-family: 'Syne', sans-serif;
+  font-size: .7rem;
+  font-weight: 600;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all .3s;
+  white-space: nowrap;
+  /* Reserve fixed width so the nav never shifts when the code changes */
+  min-width: 72px;
+  justify-content: center;
+}
+.currency-btn:hover { border-color: var(--gold-dim); color: var(--gold); }
+.currency-btn .currency-flag { font-size: .85rem; line-height: 1; }
+.currency-btn .currency-chevron {
+  font-size: .55rem;
+  opacity: .5;
+  transition: transform .25s;
+}
+.currency-selector.open .currency-chevron { transform: rotate(180deg); }
+
+.currency-dropdown {
+  position: absolute;
+  top: calc(100% + .6rem);
+  right: 0;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  min-width: 200px;
+  max-height: 320px;
+  overflow-y: auto;
+  display: none;
+  flex-direction: column;
+  z-index: 600;
+  box-shadow: 0 20px 60px rgba(0,0,0,.6);
+}
+.currency-dropdown.open { display: flex; }
+.currency-dropdown::-webkit-scrollbar { width: 3px; }
+.currency-dropdown::-webkit-scrollbar-track { background: var(--bg4); }
+.currency-dropdown::-webkit-scrollbar-thumb { background: var(--gold-dim); }
+
+.currency-option {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  padding: .65rem 1rem;
+  font-family: 'Syne', sans-serif;
+  font-size: .7rem;
+  font-weight: 500;
+  letter-spacing: .08em;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all .2s;
+  border-bottom: 1px solid rgba(201,168,76,.06);
+  background: none;
+  border-left: none;
+  border-right: none;
+  border-top: none;
+  text-align: left;
+  width: 100%;
+}
+.currency-option:last-child { border-bottom: none; }
+.currency-option:hover { background: var(--bg4); color: var(--text); }
+.currency-option.active { color: var(--gold); background: rgba(201,168,76,.05); }
+.currency-option .opt-flag { font-size: .9rem; line-height: 1; min-width: 1.2rem; }
+.currency-option .opt-code { font-weight: 700; letter-spacing: .1em; }
+.currency-option .opt-name { color: var(--text-dim); font-size: .65rem; margin-left: auto; }
+
+/* Loading shimmer for prices while rates load */
+@keyframes price-shimmer {
+  0%,100% { opacity: .4; }
+  50%      { opacity: 1;  }
+}
+.price-loading { animation: price-shimmer .9s ease infinite; }
+
+/* ── END CURRENCY SELECTOR ─────────────────────────────────────────── */
+
 /* NAV USER */
 .nav-user { display:none;align-items:center;gap:.75rem;position:relative; }
 .nav-user.visible { display:flex; }
@@ -339,6 +429,8 @@ footer { background:var(--bg);border-top:1px solid var(--border);padding:2.5rem 
   .rating-overview { grid-template-columns:1fr;gap:2rem;padding:2rem; }
   .admin-panel { width:100%; }
   .reviews { padding:5rem 1.5rem; }
+  /* Hide currency label text on small screens, keep just the code */
+  .currency-btn .currency-flag { display: none; }
 }
 </style>
 </head>
@@ -360,6 +452,17 @@ footer { background:var(--bg);border-top:1px solid var(--border);padding:2.5rem 
     <li><a href="#reviews">Reviews</a></li>
   </ul>
   <div class="nav-right">
+
+    <!-- ── CURRENCY SELECTOR ── -->
+    <div class="currency-selector" id="currencySelector">
+      <button class="currency-btn" id="currencyBtn" onclick="toggleCurrencyDropdown()" aria-haspopup="listbox" aria-expanded="false">
+        <span class="currency-flag" id="currencyFlag">$</span>
+        <span id="currencyBtnCode">USD</span>
+        <span class="currency-chevron">▼</span>
+      </button>
+      <div class="currency-dropdown" id="currencyDropdown" role="listbox"></div>
+    </div>
+
     <!-- Login button (shown when logged out) -->
     <button class="nav-login-btn" id="navLoginBtn" onclick="loginWithDiscord()">
       <svg class="discord-icon" viewBox="0 0 24 24"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057.1 18.079.11 18.1.129 18.114c2.059 1.513 4.053 2.432 6.021 3.04a.077.077 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028c1.978-.608 3.972-1.525 6.03-3.04a.077.077 0 0 0 .032-.027c.502-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
@@ -426,7 +529,8 @@ footer { background:var(--bg);border-top:1px solid var(--border);padding:2.5rem 
     <span class="stat-label">Overall Rating</span>
   </div>
   <div class="stat reveal reveal-delay-1">
-    <span class="stat-num">$7</span>
+    <!-- Starting price stat: kept as a tagged price element -->
+    <span class="stat-num price-display" data-price-usd="7" id="statStartingPrice">$7</span>
     <span class="stat-label">Starting Price</span>
   </div>
   <div class="stat reveal reveal-delay-2">
@@ -447,7 +551,7 @@ footer { background:var(--bg);border-top:1px solid var(--border);padding:2.5rem 
   <div class="services-grid">
     <div class="service-card reveal reveal-delay-1">
       <span class="service-num">01</span>
-      <div class="service-price">$7</div>
+      <div class="service-price price-display" data-price-usd="7">$7</div>
       <div class="service-name">Basic</div>
       <div class="service-divider"></div>
       <ul class="service-features">
@@ -456,7 +560,7 @@ footer { background:var(--bg);border-top:1px solid var(--border);padding:2.5rem 
     </div>
     <div class="service-card reveal reveal-delay-2">
       <span class="service-num">02</span>
-      <div class="service-price">$14</div>
+      <div class="service-price price-display" data-price-usd="14">$14</div>
       <div class="service-name">Standard</div>
       <div class="service-divider"></div>
       <ul class="service-features">
@@ -466,7 +570,7 @@ footer { background:var(--bg);border-top:1px solid var(--border);padding:2.5rem 
     <div class="service-card featured reveal reveal-delay-3">
       <span class="featured-tag">Best Value</span>
       <span class="service-num">03</span>
-      <div class="service-price">$21</div>
+      <div class="service-price price-display" data-price-usd="21">$21</div>
       <div class="service-name">Advanced</div>
       <div class="service-divider"></div>
       <ul class="service-features">
@@ -477,7 +581,7 @@ footer { background:var(--bg);border-top:1px solid var(--border);padding:2.5rem 
   <div class="custom-card reveal">
     <div class="custom-left">
       <span class="section-eyebrow">Complete Package</span>
-      <div class="service-price">$30</div>
+      <div class="service-price price-display" data-price-usd="30">$30</div>
       <div class="service-name">Full Setup</div>
       <div class="custom-features">
         <span class="custom-tag">Complete server setup</span><span class="custom-tag">Works for any type</span>
@@ -491,7 +595,7 @@ footer { background:var(--bg);border-top:1px solid var(--border);padding:2.5rem 
     <div class="custom-left">
       <span class="section-eyebrow">Flexible Option</span>
       <div class="service-price" style="font-size:2rem;color:var(--text);">Custom Work</div>
-      <div class="service-name" style="color:var(--text-muted);">Under $30 — Price depends on scope</div>
+      <div class="service-name" style="color:var(--text-muted);">Under <span class="price-display" data-price-usd="30">$30</span> — Price depends on scope</div>
       <div class="custom-features">
         <span class="custom-tag">Server redesign</span><span class="custom-tag">Fix existing servers</span>
         <span class="custom-tag">Small custom requests</span><span class="custom-tag">Negotiable price</span>
@@ -507,27 +611,32 @@ footer { background:var(--bg);border-top:1px solid var(--border);padding:2.5rem 
   <h2 class="section-title reveal">Simple, transparent<br><em>pricing</em>.</h2>
   <div class="pricing-grid">
     <div class="price-card reveal reveal-delay-1">
-      <div class="pc-tier">Basic</div><div class="pc-price"><span>$</span>7</div>
+      <div class="pc-tier">Basic</div>
+      <div class="pc-price price-display" data-price-usd="7">$7</div>
       <ul class="pc-list"><li>Clean server layout</li><li>Channel & role setup</li><li>Basic moderation</li><li>Welcome message</li></ul>
       <a href="https://discord.gg/AgRmdBZq9u" class="pc-cta" target="_blank" rel="noopener">Order Now</a>
     </div>
     <div class="price-card reveal reveal-delay-2">
-      <div class="pc-tier">Standard</div><div class="pc-price"><span>$</span>14</div>
+      <div class="pc-tier">Standard</div>
+      <div class="pc-price price-display" data-price-usd="14">$14</div>
       <ul class="pc-list"><li>Everything in Basic</li><li>Improved design</li><li>Reaction roles</li><li>Logging system</li><li>Staff roles & permissions</li></ul>
       <a href="https://discord.gg/AgRmdBZq9u" class="pc-cta" target="_blank" rel="noopener">Order Now</a>
     </div>
     <div class="price-card highlight reveal reveal-delay-3">
-      <div class="pc-tier">Advanced</div><div class="pc-price"><span>$</span>21</div>
+      <div class="pc-tier">Advanced</div>
+      <div class="pc-price price-display" data-price-usd="21">$21</div>
       <ul class="pc-list"><li>Everything in Standard</li><li>Ticket system</li><li>Bot setup</li><li>Auto systems</li><li>Organized staff system</li></ul>
       <a href="https://discord.gg/AgRmdBZq9u" class="pc-cta" target="_blank" rel="noopener">Order Now</a>
     </div>
     <div class="price-card reveal reveal-delay-4">
-      <div class="pc-tier">Full Setup</div><div class="pc-price"><span>$</span>30</div>
+      <div class="pc-tier">Full Setup</div>
+      <div class="pc-price price-display" data-price-usd="30">$30</div>
       <ul class="pc-list"><li>Complete server setup</li><li>Any server type</li><li>All features</li><li>Custom systems</li><li>Priority support</li></ul>
       <a href="https://discord.gg/AgRmdBZq9u" class="pc-cta" target="_blank" rel="noopener">Order Now</a>
     </div>
     <div class="price-card reveal reveal-delay-4">
-      <div class="pc-tier">Custom Work</div><div class="pc-price" style="font-size:1.5rem;padding-top:.4rem;">Under $30</div>
+      <div class="pc-tier">Custom Work</div>
+      <div class="pc-price" style="font-size:1.5rem;padding-top:.4rem;">Under <span class="price-display" data-price-usd="30">$30</span></div>
       <ul class="pc-list"><li>Server redesign</li><li>Fix existing servers</li><li>Small requests</li><li>Negotiable price</li></ul>
       <a href="https://discord.gg/AgRmdBZq9u" class="pc-cta" target="_blank" rel="noopener">Discuss</a>
     </div>
@@ -701,14 +810,403 @@ footer { background:var(--bg);border-top:1px solid var(--border);padding:2.5rem 
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════
-     JAVASCRIPT
-═══════════════════════════════════════ -->
+<!-- ═══════════════════════════════════════════════════════════════════════
+     ██████╗ ██╗   ██╗██████╗ ██████╗ ███████╗███╗   ██╗ ██████╗██╗   ██╗
+     ██╔════╝██║   ██║██╔══██╗██╔══██╗██╔════╝████╗  ██║██╔════╝╚██╗ ██╔╝
+     ██║     ██║   ██║██████╔╝██████╔╝█████╗  ██╔██╗ ██║██║      ╚████╔╝
+     ██║     ██║   ██║██╔══██╗██╔══██╗██╔══╝  ██║╚██╗██║██║       ╚██╔╝
+     ╚██████╗╚██████╔╝██║  ██║██║  ██║███████╗██║ ╚████║╚██████╗   ██║
+      ╚═════╝ ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═══╝ ╚═════╝   ╚═╝
+     SERVICE  —  Centralised, single-source-of-truth currency system
+═══════════════════════════════════════════════════════════════════════ -->
 <script>
-// ─── CONFIG — Replace with your Supabase project values ──────────────
-const SUPABASE_URL = 'https://haiddewunhbstqfoyluz.supabase.co/';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhhaWRkZXd1bmhic3RxZm95bHV6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3MTE1MDEsImV4cCI6MjA5NTI4NzUwMX0.R4vlSkvYxgJMlTYyEb_z9KIzOg_OsCk3TI8-jcEqbcs';
-const SUPABASE_READY = true;
+'use strict';
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SECTION 1 — CURRENCY CATALOGUE
+// All supported currencies. Add new ones here; nothing else changes.
+// Fields: code, name, flag (emoji), locale (for Intl.NumberFormat).
+// ═══════════════════════════════════════════════════════════════════════════
+const CURRENCIES = [
+  { code: 'USD', name: 'US Dollar',        flag: '🇺🇸', locale: 'en-US'  },
+  { code: 'PHP', name: 'Philippine Peso',  flag: '🇵🇭', locale: 'en-PH'  },
+  { code: 'EUR', name: 'Euro',             flag: '🇪🇺', locale: 'de-DE'  },
+  { code: 'GBP', name: 'British Pound',    flag: '🇬🇧', locale: 'en-GB'  },
+  { code: 'JPY', name: 'Japanese Yen',     flag: '🇯🇵', locale: 'ja-JP'  },
+  { code: 'AUD', name: 'Australian Dollar',flag: '🇦🇺', locale: 'en-AU'  },
+  { code: 'CAD', name: 'Canadian Dollar',  flag: '🇨🇦', locale: 'en-CA'  },
+  { code: 'SGD', name: 'Singapore Dollar', flag: '🇸🇬', locale: 'en-SG'  },
+  { code: 'KRW', name: 'South Korean Won', flag: '🇰🇷', locale: 'ko-KR'  },
+  { code: 'INR', name: 'Indian Rupee',     flag: '🇮🇳', locale: 'en-IN'  },
+  { code: 'MYR', name: 'Malaysian Ringgit',flag: '🇲🇾', locale: 'ms-MY'  },
+  { code: 'IDR', name: 'Indonesian Rupiah',flag: '🇮🇩', locale: 'id-ID'  },
+  { code: 'THB', name: 'Thai Baht',        flag: '🇹🇭', locale: 'th-TH'  },
+  { code: 'VND', name: 'Vietnamese Dong',  flag: '🇻🇳', locale: 'vi-VN'  },
+  { code: 'NZD', name: 'New Zealand Dollar',flag:'🇳🇿', locale: 'en-NZ'  },
+  { code: 'BRL', name: 'Brazilian Real',   flag: '🇧🇷', locale: 'pt-BR'  },
+  { code: 'MXN', name: 'Mexican Peso',     flag: '🇲🇽', locale: 'es-MX'  },
+  { code: 'CHF', name: 'Swiss Franc',      flag: '🇨🇭', locale: 'de-CH'  },
+  { code: 'HKD', name: 'Hong Kong Dollar', flag: '🇭🇰', locale: 'zh-HK'  },
+  { code: 'AED', name: 'UAE Dirham',       flag: '🇦🇪', locale: 'ar-AE'  },
+];
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SECTION 2 — HARDCODED FALLBACK RATES (base: USD)
+// These are approximate rates used ONLY when the live API call fails.
+// They allow prices to still convert rather than breaking entirely.
+// ═══════════════════════════════════════════════════════════════════════════
+const FALLBACK_RATES = {
+  USD: 1,
+  PHP: 57.50,
+  EUR: 0.93,
+  GBP: 0.79,
+  JPY: 154.0,
+  AUD: 1.55,
+  CAD: 1.38,
+  SGD: 1.35,
+  KRW: 1345.0,
+  INR: 83.5,
+  MYR: 4.70,
+  IDR: 15900.0,
+  THB: 35.5,
+  VND: 25350.0,
+  NZD: 1.66,
+  BRL: 5.05,
+  MXN: 17.2,
+  CHF: 0.91,
+  HKD: 7.82,
+  AED: 3.67,
+};
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SECTION 3 — TIMEZONE → COUNTRY → CURRENCY MAP
+// Used to detect currency from the browser's timezone without any IP call.
+// We only need an entry when the country is NOT already unambiguous from
+// the Intl.DateTimeFormat locale (which covers most Western users fine).
+// ═══════════════════════════════════════════════════════════════════════════
+const TZ_CURRENCY_MAP = {
+  // Asia / Pacific
+  'Asia/Manila':        'PHP',
+  'Asia/Tokyo':         'JPY',
+  'Asia/Seoul':         'KRW',
+  'Asia/Singapore':     'SGD',
+  'Asia/Kuala_Lumpur':  'MYR',
+  'Asia/Jakarta':       'IDR',
+  'Asia/Bangkok':       'THB',
+  'Asia/Ho_Chi_Minh':   'VND',
+  'Asia/Kolkata':       'INR',
+  'Asia/Colombo':       'INR',
+  'Asia/Dhaka':         'INR',
+  'Asia/Dubai':         'AED',
+  'Asia/Hong_Kong':     'HKD',
+  'Asia/Shanghai':      'CNY',
+  'Asia/Chongqing':     'CNY',
+  'Australia/Sydney':   'AUD',
+  'Australia/Melbourne':'AUD',
+  'Australia/Brisbane': 'AUD',
+  'Australia/Perth':    'AUD',
+  'Pacific/Auckland':   'NZD',
+  // Europe
+  'Europe/Berlin':      'EUR',
+  'Europe/Paris':       'EUR',
+  'Europe/Madrid':      'EUR',
+  'Europe/Rome':        'EUR',
+  'Europe/Amsterdam':   'EUR',
+  'Europe/Brussels':    'EUR',
+  'Europe/Vienna':      'EUR',
+  'Europe/Warsaw':      'EUR',
+  'Europe/Prague':      'EUR',
+  'Europe/Stockholm':   'EUR',
+  'Europe/Helsinki':    'EUR',
+  'Europe/Athens':      'EUR',
+  'Europe/Lisbon':      'EUR',
+  'Europe/London':      'GBP',
+  'Europe/Dublin':      'EUR',
+  'Europe/Zurich':      'CHF',
+  'Europe/Geneva':      'CHF',
+  'Europe/Bern':        'CHF',
+  // Americas
+  'America/New_York':   'USD',
+  'America/Chicago':    'USD',
+  'America/Denver':     'USD',
+  'America/Los_Angeles':'USD',
+  'America/Phoenix':    'USD',
+  'America/Anchorage':  'USD',
+  'Pacific/Honolulu':   'USD',
+  'America/Toronto':    'CAD',
+  'America/Vancouver':  'CAD',
+  'America/Sao_Paulo':  'BRL',
+  'America/Mexico_City':'MXN',
+};
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SECTION 4 — CURRENCY SERVICE (singleton, global)
+// ═══════════════════════════════════════════════════════════════════════════
+const CurrencyService = (() => {
+  const BASE_CURRENCY  = 'USD';
+  const LS_KEY         = 'dsc_currency_v1';      // localStorage key
+  const LS_RATES_KEY   = 'dsc_rates_v1';          // cache key
+  const LS_RATES_TS    = 'dsc_rates_ts_v1';        // cache timestamp
+  const RATE_TTL_MS    = 6 * 60 * 60 * 1000;      // 6 hours cache TTL
+  const RATES_API      = 'https://open.er-api.com/v6/latest/USD';
+
+  let _rates      = { ...FALLBACK_RATES };         // current rates (USD base)
+  let _currency   = BASE_CURRENCY;                 // active currency code
+  let _ratesReady = false;                         // true once rates loaded
+
+  // ── Internal helpers ──────────────────────────────────────────────────
+  function _getCurrencyMeta(code) {
+    return CURRENCIES.find(c => c.code === code) || CURRENCIES[0];
+  }
+
+  function _formatPrice(amountUSD, currencyCode) {
+    const rate   = _rates[currencyCode] ?? 1;
+    const amount = amountUSD * rate;
+    const meta   = _getCurrencyMeta(currencyCode);
+    try {
+      return new Intl.NumberFormat(meta.locale, {
+        style:                 'currency',
+        currency:              currencyCode,
+        minimumFractionDigits: currencyCode === 'JPY' || currencyCode === 'KRW' || currencyCode === 'IDR' || currencyCode === 'VND' ? 0 : 0,
+        maximumFractionDigits: currencyCode === 'JPY' || currencyCode === 'KRW' || currencyCode === 'IDR' || currencyCode === 'VND' ? 0 : 0,
+      }).format(amount);
+    } catch {
+      // Graceful fallback for unsupported Intl locales
+      return `${currencyCode} ${amount.toFixed(0)}`;
+    }
+  }
+
+  // ── Detect currency from browser signals (no external calls) ─────────
+  function _detectCurrencyFromBrowser() {
+    // 1. Timezone (most reliable signal for Asia)
+    try {
+      const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      if (TZ_CURRENCY_MAP[tz]) return TZ_CURRENCY_MAP[tz];
+    } catch {}
+
+    // 2. Browser locale language tag (e.g. "en-PH" → PHP)
+    const localeMap = {
+      'en-PH': 'PHP', 'fil-PH': 'PHP',
+      'ja':    'JPY', 'ja-JP':  'JPY',
+      'ko':    'KRW', 'ko-KR':  'KRW',
+      'zh-HK': 'HKD', 'zh-TW':  'NZD',
+      'id':    'IDR', 'id-ID':  'IDR',
+      'th':    'THB', 'th-TH':  'THB',
+      'vi':    'VND', 'vi-VN':  'VND',
+      'ms':    'MYR', 'ms-MY':  'MYR',
+      'en-SG': 'SGD',
+      'en-AU': 'AUD', 'en-NZ':  'NZD',
+      'en-CA': 'CAD',
+      'en-GB': 'GBP',
+      'en-IN': 'INR',
+      'de':    'EUR', 'de-DE':  'EUR', 'de-AT': 'EUR',
+      'fr':    'EUR', 'fr-FR':  'EUR',
+      'es-MX': 'MXN', 'es-419': 'MXN',
+      'pt-BR': 'BRL',
+      'ar-AE': 'AED',
+    };
+    for (const lang of (navigator.languages || [navigator.language || 'en-US'])) {
+      if (localeMap[lang]) return localeMap[lang];
+      // Check prefix e.g. "en" → skip (too ambiguous by itself)
+    }
+
+    return BASE_CURRENCY; // default fallback
+  }
+
+  // ── Fetch live rates (with localStorage cache) ────────────────────────
+  async function _fetchRates() {
+    // Check cache freshness
+    try {
+      const ts    = parseInt(localStorage.getItem(LS_RATES_TS) || '0', 10);
+      const cache = localStorage.getItem(LS_RATES_KEY);
+      if (cache && Date.now() - ts < RATE_TTL_MS) {
+        const cached = JSON.parse(cache);
+        if (cached && cached.USD === 1) {
+          _rates = { ...FALLBACK_RATES, ...cached };
+          _ratesReady = true;
+          return true; // served from cache
+        }
+      }
+    } catch {}
+
+    // Live fetch
+    try {
+      const res  = await fetch(RATES_API, { signal: AbortSignal.timeout(5000) });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const json = await res.json();
+      if (json.result !== 'success' || !json.rates) throw new Error('Bad response');
+
+      const live = { USD: 1 };
+      for (const { code } of CURRENCIES) {
+        if (json.rates[code]) live[code] = json.rates[code];
+      }
+
+      _rates = { ...FALLBACK_RATES, ...live };
+      _ratesReady = true;
+
+      // Cache it
+      try {
+        localStorage.setItem(LS_RATES_KEY, JSON.stringify(live));
+        localStorage.setItem(LS_RATES_TS, String(Date.now()));
+      } catch {}
+
+      return true;
+    } catch (err) {
+      console.warn('[CurrencyService] Rate fetch failed, using fallback rates.', err.message);
+      _ratesReady = true;
+      return false;
+    }
+  }
+
+  // ── Render all price elements ─────────────────────────────────────────
+  function _updateAllPrices() {
+    document.querySelectorAll('[data-price-usd]').forEach(el => {
+      const usd = parseFloat(el.getAttribute('data-price-usd'));
+      if (isNaN(usd)) return;
+      el.textContent = _formatPrice(usd, _currency);
+      el.classList.remove('price-loading');
+    });
+  }
+
+  // ── Update nav button display ─────────────────────────────────────────
+  function _updateNavButton() {
+    const meta = _getCurrencyMeta(_currency);
+    const flagEl = document.getElementById('currencyFlag');
+    const codeEl = document.getElementById('currencyBtnCode');
+    if (flagEl) flagEl.textContent = meta.flag;
+    if (codeEl) codeEl.textContent = meta.code;
+  }
+
+  // ─── Public API ───────────────────────────────────────────────────────
+  return {
+    get currency() { return _currency; },
+    get rates()    { return _rates; },
+    get isReady()  { return _ratesReady; },
+
+    getCurrencyMeta: _getCurrencyMeta,
+
+    formatPrice(amountUSD) {
+      return _formatPrice(amountUSD, _currency);
+    },
+
+    /** Set a new currency (manual override or auto-detect). Persists to LS. */
+    setCurrency(code, save = true) {
+      if (!CURRENCIES.find(c => c.code === code)) {
+        console.warn(`[CurrencyService] Unknown currency: ${code}`);
+        return;
+      }
+      _currency = code;
+      if (save) {
+        try { localStorage.setItem(LS_KEY, code); } catch {}
+      }
+      _updateNavButton();
+      _updateAllPrices();
+    },
+
+    /** Initialise: load saved pref → detect → fetch rates → update UI */
+    async init() {
+      // 1. Mark prices as loading (prevents layout shift by keeping text nodes)
+      document.querySelectorAll('[data-price-usd]').forEach(el => {
+        el.classList.add('price-loading');
+      });
+
+      // 2. Resolve which currency to show
+      let resolved = BASE_CURRENCY;
+      try {
+        const saved = localStorage.getItem(LS_KEY);
+        if (saved && CURRENCIES.find(c => c.code === saved)) {
+          resolved = saved; // manual preference wins
+        } else {
+          resolved = _detectCurrencyFromBrowser();
+        }
+      } catch {}
+
+      _currency = resolved;
+      _updateNavButton();
+
+      // 3. Fetch live rates (non-blocking: update prices twice if needed)
+      //    First pass with fallback rates (instant), second pass with live rates
+      _updateAllPrices(); // immediate render with fallback rates
+      const fetchedLive = await _fetchRates();
+      _updateAllPrices(); // re-render with accurate live rates
+
+      if (!fetchedLive) {
+        // silently using fallback — no disruptive UI error shown
+        console.info('[CurrencyService] Using offline fallback rates.');
+      }
+
+      return resolved;
+    },
+  };
+})();
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SECTION 5 — CURRENCY DROPDOWN UI
+// ═══════════════════════════════════════════════════════════════════════════
+function buildCurrencyDropdown() {
+  const dropdown = document.getElementById('currencyDropdown');
+  if (!dropdown) return;
+
+  dropdown.innerHTML = CURRENCIES.map(c => `
+    <button
+      class="currency-option${c.code === CurrencyService.currency ? ' active' : ''}"
+      onclick="selectCurrency('${c.code}')"
+      role="option"
+      aria-selected="${c.code === CurrencyService.currency}"
+    >
+      <span class="opt-flag">${c.flag}</span>
+      <span class="opt-code">${c.code}</span>
+      <span class="opt-name">${c.name}</span>
+    </button>
+  `).join('');
+}
+
+function toggleCurrencyDropdown() {
+  const sel      = document.getElementById('currencySelector');
+  const dropdown = document.getElementById('currencyDropdown');
+  const btn      = document.getElementById('currencyBtn');
+  const isOpen   = dropdown.classList.toggle('open');
+  sel.classList.toggle('open', isOpen);
+  btn.setAttribute('aria-expanded', String(isOpen));
+  if (isOpen) buildCurrencyDropdown(); // always re-render to reflect active state
+}
+
+function closeCurrencyDropdown() {
+  const sel      = document.getElementById('currencySelector');
+  const dropdown = document.getElementById('currencyDropdown');
+  const btn      = document.getElementById('currencyBtn');
+  dropdown.classList.remove('open');
+  sel.classList.remove('open');
+  btn.setAttribute('aria-expanded', 'false');
+}
+
+function selectCurrency(code) {
+  CurrencyService.setCurrency(code, true);
+  buildCurrencyDropdown(); // refresh active state
+  closeCurrencyDropdown();
+
+  // Brief toast to confirm the change
+  const meta = CurrencyService.getCurrencyMeta(code);
+  showToast(`${meta.flag}  Prices shown in ${meta.code}`, 'gold');
+}
+
+// Close currency dropdown when clicking outside
+document.addEventListener('click', e => {
+  if (!document.getElementById('currencySelector').contains(e.target)) {
+    closeCurrencyDropdown();
+  }
+});
+
+// Close on Escape
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeCurrencyDropdown();
+});
+</script>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     CURSOR  +  REVEAL  +  TOAST  +  SUPABASE GUARD
+═══════════════════════════════════════════════════════════════════════ -->
+<script>
 // ── CURSOR ─────────────────────────────────────────────────────────────
 const cur = document.getElementById('cursor');
 const ring = document.getElementById('cursorRing');
@@ -728,9 +1226,17 @@ function showToast(msg, type='gold') {
   setTimeout(()=>t.classList.remove('show'), 3500);
 }
 
+// ── CURRENCY SERVICE BOOT ──────────────────────────────────────────────
+// Starts immediately so prices render before Supabase resolves.
+CurrencyService.init();
+
+// ── SUPABASE CONFIG ────────────────────────────────────────────────────
+const SUPABASE_URL = 'https://haiddewunhbstqfoyluz.supabase.co/';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhhaWRkZXd1bmhic3RxZm95bHV6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3MTE1MDEsImV4cCI6MjA5NTI4NzUwMX0.R4vlSkvYxgJMlTYyEb_z9KIzOg_OsCk3TI8-jcEqbcs';
+const SUPABASE_READY = true;
+
 // ── SUPABASE GUARD ─────────────────────────────────────────────────────
 if (!SUPABASE_READY) {
-  // Show setup notice in reviews section
   document.getElementById('authGate').innerHTML = `
     <p style="color:var(--gold);font-family:'Syne',sans-serif;font-size:.8rem;letter-spacing:.1em;">
       ⚙ Supabase not configured yet.<br>
@@ -752,14 +1258,15 @@ if (!SUPABASE_READY) {
   if(ss)ss.innerHTML='<span class="stat-star">★</span>'.repeat(5);
   document.getElementById('reviewsGrid').innerHTML='<div class="no-reviews" style="grid-column:1/-1">Reviews will appear here once Supabase is configured.</div>';
   document.getElementById('reviewsCount').textContent='0 reviews';
-  // Stop here — no Supabase needed for rest of site
-  throw new Error('SUPABASE_PLACEHOLDER'); // stops this script block cleanly
+  throw new Error('SUPABASE_PLACEHOLDER');
 }
 </script>
-<script>
-  // ── ONLY RUNS WHEN SUPABASE IS CONFIGURED ─────────────────────────────
 
-let currentUser = null, currentProfile = null, allReviews = [], currentFilter = 'all', isAdmin = false;
+<!-- ═══════════════════════════════════════════════════════════════════════
+     SUPABASE — AUTH + REVIEWS (unchanged logic, existing patterns)
+═══════════════════════════════════════════════════════════════════════ -->
+<script>
+  let currentUser = null, currentProfile = null, allReviews = [], currentFilter = 'all', isAdmin = false;
 
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   auth: { redirectTo: window.location.origin + window.location.pathname }
@@ -837,7 +1344,6 @@ function renderStats() {
   const total = visible.length;
   const avg = total ? (visible.reduce((s,r)=>s+r.rating,0)/total) : 0;
 
-  // Stat bar
   document.getElementById('statRating').textContent = total ? avg.toFixed(1)+'★' : '—';
   const sStars = document.getElementById('statRatingStars');
   sStars.innerHTML = '';
@@ -850,7 +1356,6 @@ function renderStats() {
     }
   }
 
-  // Overview
   document.getElementById('overallRating').textContent = total ? avg.toFixed(1) : '—';
   document.getElementById('overallLabel').textContent = total ? `Based on ${total} review${total!==1?'s':''}` : 'No reviews yet — be the first!';
   document.getElementById('totalReviews').textContent = total;
@@ -864,7 +1369,6 @@ function renderStats() {
     overallStars.appendChild(s);
   }
 
-  // Breakdown
   for(let n=1;n<=5;n++){
     const count = visible.filter(r=>r.rating===n).length;
     const pct = total ? Math.round(count/total*100) : 0;
@@ -1052,7 +1556,6 @@ function renderAdminPanel() {
 
 // ── INIT ───────────────────────────────────────────────────────────────
 async function init() {
-  // Listen for auth changes
   sb.auth.onAuthStateChange(async (event, session) => {
     if (session?.user) {
       currentUser = session.user;
@@ -1085,11 +1588,9 @@ async function init() {
     }
   });
 
-  // Initial load
   const { data: { session } } = await sb.auth.getSession();
   if (!session) await loadReviews();
 
-  // Real-time subscription
   sb.channel('reviews-realtime')
     .on('postgres_changes', { event: '*', schema: 'public', table: 'reviews' }, async ()=>{
       await loadReviews();
