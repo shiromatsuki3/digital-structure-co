@@ -84,3 +84,60 @@ Your review system is now:
 - ✅ Star breakdown with live percentages
 - ✅ Verified client badges
 - ✅ Mobile responsive
+
+---
+
+## Feature Setup — Portfolio, Package Builder, Order Form, FAQ
+
+### Portfolio Table (NEW)
+
+After completing the base setup, run the portfolio schema:
+
+1. In Supabase → **SQL Editor** → New query
+2. Paste contents of `supabase-portfolio.sql`
+3. Click **Run**
+
+This creates the `portfolio` table with RLS policies:
+- Anyone can read entries (public display)
+- Only admin accounts can create, edit, or delete
+
+### Adding Portfolio Entries (Admin)
+
+1. Log in to the site with your Discord account (must have `is_admin = true`)
+2. Click your username in the nav → **Portfolio Admin ◈**
+3. Fill in the form:
+   - **Title** — project name
+   - **Description** — short description
+   - **Features** — one per line (e.g. "Ticket System")
+   - **Completion Date** — month/year (optional)
+   - **Cover Image URL** — upload to [Imgur](https://imgur.com) and paste the direct `.jpg` / `.png` URL
+   - **Screenshots** — one URL per line (optional)
+4. Click **Save Entry**
+
+### Package Builder
+
+The "Build Your Package" button opens an interactive builder where visitors can:
+- Choose a base package (Basic / Standard / Advanced / Full Setup)
+- Select optional add-ons with live price updates
+- See an estimated delivery time
+
+Pricing card buttons now pre-select the matching package in the builder.
+
+### Order Form
+
+After building a package, clicking "Continue to Order Form →" opens:
+- Server type selector
+- Theme / name field
+- Notes / desired features
+- Preferred bots field
+
+Clicking "Generate Summary" creates a formatted text block the user can copy and paste into a Discord ticket.
+
+### FAQ Section
+
+The FAQ section at `#faq` is:
+- Searchable (client-side, no backend needed)
+- Accordion-style, mobile-friendly
+- Matches existing site design
+
+To add or edit questions, update the `.faq-item` HTML blocks inside the `#faq` section of `index.html`.
