@@ -431,7 +431,164 @@ footer { background:var(--bg);border-top:1px solid var(--border);padding:2.5rem 
   .reviews { padding:5rem 1.5rem; }
   /* Hide currency label text on small screens, keep just the code */
   .currency-btn .currency-flag { display: none; }
+  /* Mobile: modals full width */
+  .modal-box { width:100%;max-width:100%;border-radius:0;margin:0;max-height:100vh; }
+  .builder-body { flex-direction:column; }
+  .builder-right { min-width:unset; }
+  .order-body { flex-direction:column; }
+  .order-form-right { min-width:unset; }
+  .lightbox-inner { flex-direction:column; }
+  .lightbox-left { min-width:unset; }
+  .modal-overlay { align-items:flex-end; }
+  /* Portfolio mobile */
+  .portfolio-grid { grid-template-columns:1fr; }
+  .portfolio-header { flex-direction:column;align-items:flex-start;gap:1rem; }
+  /* FAQ mobile */
+  .faq-header { flex-direction:column;align-items:flex-start;gap:1.5rem; }
 }
+
+/* ══════════════════════════════════════════
+   PORTFOLIO
+══════════════════════════════════════════ */
+.portfolio-section { background:var(--bg2);padding:7rem 4rem; }
+.portfolio-header { display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:4rem;flex-wrap:wrap;gap:2rem; }
+.portfolio-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem; }
+.portfolio-loading { grid-column:1/-1;text-align:center;padding:4rem;color:var(--text-dim);font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-style:italic; }
+.portfolio-empty { grid-column:1/-1;text-align:center;padding:4rem;color:var(--text-dim);font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-style:italic; }
+
+.portfolio-card { background:var(--bg3);border:1px solid var(--border);overflow:hidden;cursor:pointer;transition:border-color .3s,transform .3s;position:relative; }
+.portfolio-card:hover { border-color:var(--border-hover);transform:translateY(-4px); }
+.portfolio-card-cover { width:100%;aspect-ratio:16/9;object-fit:cover;display:block;background:var(--bg4); }
+.portfolio-card-cover-placeholder { width:100%;aspect-ratio:16/9;background:var(--bg4);display:flex;align-items:center;justify-content:center;color:var(--text-dim);font-size:2rem; }
+.portfolio-card-body { padding:1.5rem; }
+.portfolio-card-title { font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem;letter-spacing:.05em;margin-bottom:.75rem; }
+.portfolio-card-features { display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:1rem; }
+.portfolio-feature-tag { border:1px solid var(--border);padding:.2rem .6rem;font-size:.65rem;color:var(--text-dim);font-family:'Syne',sans-serif;letter-spacing:.06em; }
+.portfolio-card-desc { font-size:.82rem;color:var(--text-muted);line-height:1.7;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden; }
+.portfolio-card-date { font-size:.68rem;color:var(--text-dim);font-family:'Syne',sans-serif;margin-top:.75rem;letter-spacing:.08em; }
+.portfolio-card-admin { position:absolute;top:.75rem;right:.75rem;display:flex;gap:.4rem; }
+.portfolio-admin-btn { padding:.25rem .55rem;font-family:'Syne',sans-serif;font-size:.58rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;border:1px solid var(--border);background:var(--bg3);cursor:pointer;transition:all .2s;color:var(--text-muted); }
+.portfolio-admin-btn:hover { color:var(--gold);border-color:var(--gold); }
+.portfolio-admin-btn.del:hover { color:var(--red);border-color:var(--red); }
+
+/* ══════════════════════════════════════════
+   FAQ
+══════════════════════════════════════════ */
+.faq-section { background:var(--bg);padding:7rem 4rem; }
+.faq-header { display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:4rem;flex-wrap:wrap;gap:2rem; }
+.faq-search-wrap { flex-shrink:0; }
+.faq-search { background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:.65rem 1.2rem;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:300;outline:none;width:280px;transition:border-color .3s; }
+.faq-search:focus { border-color:var(--gold-dim); }
+.faq-search::placeholder { color:var(--text-dim); }
+.faq-list { display:flex;flex-direction:column;border:1px solid var(--border); }
+.faq-item { border-bottom:1px solid var(--border); }
+.faq-item:last-child { border-bottom:none; }
+.faq-item.hidden { display:none; }
+.faq-q { width:100%;display:flex;justify-content:space-between;align-items:center;padding:1.4rem 2rem;background:none;border:none;cursor:pointer;text-align:left;gap:1rem;transition:background .2s; }
+.faq-q:hover { background:var(--bg2); }
+.faq-q span:first-child { font-family:'Syne',sans-serif;font-weight:600;font-size:.88rem;letter-spacing:.03em;color:var(--text); }
+.faq-chevron { font-size:1.4rem;color:var(--gold);transition:transform .3s;flex-shrink:0;font-weight:300;line-height:1; }
+.faq-item.open .faq-chevron { transform:rotate(45deg); }
+.faq-a { max-height:0;overflow:hidden;transition:max-height .4s cubic-bezier(.22,1,.36,1); }
+.faq-item.open .faq-a { max-height:300px; }
+.faq-a p { padding:0 2rem 1.4rem;font-size:.88rem;color:var(--text-muted);line-height:1.8; }
+.faq-a p strong { color:var(--text);font-weight:600; }
+.faq-no-results { padding:3rem;text-align:center;color:var(--text-dim);font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.1rem; }
+
+/* ══════════════════════════════════════════
+   MODALS (shared base)
+══════════════════════════════════════════ */
+.modal-overlay { position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:800;display:none;align-items:center;justify-content:center;padding:2rem;backdrop-filter:blur(4px); }
+.modal-overlay.open { display:flex; }
+.modal-box { background:var(--bg3);border:1px solid var(--border);max-width:900px;width:100%;max-height:90vh;overflow-y:auto;position:relative; }
+.modal-box::-webkit-scrollbar { width:3px; }
+.modal-box::-webkit-scrollbar-thumb { background:var(--gold-dim); }
+.modal-header { padding:2rem 2.5rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:flex-start;position:sticky;top:0;background:var(--bg3);z-index:1; }
+.modal-title { font-family:'Cormorant Garamond',serif;font-weight:300;font-size:1.8rem;line-height:1.1;margin-top:.3rem; }
+.modal-title em { font-style:italic;color:var(--gold); }
+.modal-close { background:none;border:none;color:var(--text-muted);font-size:1.3rem;cursor:pointer;line-height:1;padding:.25rem;transition:color .2s; }
+.modal-close:hover { color:var(--text); }
+.modal-body { padding:2rem 2.5rem; }
+
+/* ── Package Builder ──────────────────────────────────────────── */
+.builder-body { display:flex;gap:2.5rem; }
+.builder-left { flex:1; }
+.builder-right { min-width:280px;max-width:300px; }
+.builder-section { margin-bottom:2rem; }
+.builder-section-label { font-family:'Syne',sans-serif;font-size:.68rem;font-weight:700;letter-spacing:.25em;text-transform:uppercase;color:var(--gold);display:block;margin-bottom:1rem; }
+.base-options { display:flex;flex-direction:column;gap:.5rem; }
+.base-opt { display:flex;align-items:center;gap:1rem;padding:1rem 1.2rem;background:var(--bg4);border:1px solid var(--border);cursor:pointer;text-align:left;transition:all .2s; }
+.base-opt:hover { border-color:var(--border-hover); }
+.base-opt.active { border-color:var(--gold);background:rgba(201,168,76,.07); }
+.base-opt-name { font-family:'Syne',sans-serif;font-weight:700;font-size:.82rem;letter-spacing:.06em;flex:1;color:var(--text); }
+.base-opt-price { font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:500;color:var(--gold);margin-left:auto; }
+.base-opt-desc { font-size:.72rem;color:var(--text-muted);width:100%;display:block;margin-top:.15rem; }
+.addon-list { display:flex;flex-direction:column;gap:.4rem; }
+.addon-item { display:flex;align-items:center;gap:.9rem;padding:.8rem 1rem;border:1px solid var(--border);cursor:pointer;background:var(--bg4);transition:all .2s; }
+.addon-item:hover { border-color:var(--border-hover); }
+.addon-item input { display:none; }
+.addon-check { width:16px;height:16px;border:1px solid var(--border);flex-shrink:0;position:relative;transition:all .2s; }
+.addon-item input:checked + .addon-check { background:var(--gold);border-color:var(--gold); }
+.addon-item input:checked + .addon-check::after { content:'✓';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:.65rem;color:var(--bg);font-weight:700; }
+.addon-item input:checked ~ .addon-label { color:var(--text); }
+.addon-label { font-family:'Syne',sans-serif;font-size:.8rem;flex:1;color:var(--text-muted); }
+.addon-price { font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--gold-dim);margin-left:auto; }
+.builder-summary { background:var(--bg4);border:1px solid var(--border);padding:1.5rem;position:sticky;top:5rem; }
+.summary-base-line { display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem; }
+.summary-base-line span:first-child { font-family:'Syne',sans-serif;font-weight:600;font-size:.82rem; }
+.summary-price { font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:var(--gold); }
+.summary-addons { display:flex;flex-direction:column;gap:.3rem;margin-bottom:.5rem;min-height:.5rem; }
+.summary-addon-row { display:flex;justify-content:space-between;align-items:center; }
+.summary-addon-name { font-size:.72rem;color:var(--text-muted);font-family:'Syne',sans-serif; }
+.summary-addon-val { font-size:.78rem;color:var(--text-muted);font-family:'Cormorant Garamond',serif; }
+.summary-divider { width:100%;height:1px;background:var(--border);margin:.75rem 0; }
+.summary-total-row { display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem; }
+.summary-total-label { font-family:'Syne',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase; }
+.summary-total-price { font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:500;color:var(--gold); }
+.summary-delivery { display:flex;flex-direction:column;gap:.2rem; }
+.summary-delivery-label { font-family:'Syne',sans-serif;font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--text-dim); }
+.summary-delivery-val { font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--text-muted); }
+
+/* ── Order Form ───────────────────────────────────────────────── */
+.order-body { display:flex;gap:2.5rem; }
+.order-form-left { flex:1; }
+.order-form-right { min-width:300px;max-width:340px; }
+.form-input { width:100%;background:var(--bg4);border:1px solid var(--border);color:var(--text);padding:.8rem 1rem;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:300;outline:none;transition:border-color .3s; }
+.form-input:focus { border-color:var(--gold-dim); }
+.form-select { width:100%;background:var(--bg4);border:1px solid var(--border);color:var(--text);padding:.8rem 1rem;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:300;outline:none;appearance:none;cursor:pointer;transition:border-color .3s; }
+.form-select:focus { border-color:var(--gold-dim); }
+.form-textarea { width:100%;background:var(--bg4);border:1px solid var(--border);color:var(--text);padding:.8rem 1rem;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:300;resize:vertical;min-height:100px;outline:none;transition:border-color .3s; }
+.form-textarea:focus { border-color:var(--gold-dim); }
+.field-required { color:var(--gold); }
+.order-summary-box { background:var(--bg4);border:1px solid var(--border);padding:1.5rem;position:sticky;top:5rem; }
+.order-summary-content { margin-top:.75rem;font-size:.8rem;color:var(--text-muted);line-height:1.8; }
+.order-summary-content .osc-row { display:flex;justify-content:space-between;gap:1rem;margin-bottom:.2rem; }
+.order-summary-content .osc-label { color:var(--text-dim);font-size:.72rem;font-family:'Syne',sans-serif;letter-spacing:.08em; }
+.order-summary-content .osc-val { font-family:'Syne',sans-serif;font-size:.78rem;font-weight:600;text-align:right;flex:1; }
+.order-copy-text { width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text-muted);padding:.75rem 1rem;font-family:'DM Sans',sans-serif;font-size:.78rem;line-height:1.7;resize:none;height:180px;outline:none;margin-top:1rem; }
+
+/* ── Lightbox ─────────────────────────────────────────────────── */
+.lightbox-box { background:var(--bg3);border:1px solid var(--border);max-width:1000px;width:100%;max-height:92vh;overflow-y:auto;position:relative; }
+.lightbox-box::-webkit-scrollbar { width:3px; }
+.lightbox-box::-webkit-scrollbar-thumb { background:var(--gold-dim); }
+.lightbox-close { position:sticky;top:1rem;left:calc(100% - 2.5rem);display:block;z-index:2;margin:1rem 1rem 0 auto; }
+.lightbox-inner { display:flex;gap:0; }
+.lightbox-left { min-width:320px;max-width:420px;flex:1;padding:2rem; }
+.lightbox-cover { width:100%;aspect-ratio:16/9;object-fit:cover;border:1px solid var(--border);margin-bottom:1rem;display:block; }
+.lightbox-thumbs { display:flex;flex-wrap:wrap;gap:.5rem; }
+.lightbox-thumb { width:calc(33.33% - .35rem);aspect-ratio:16/9;object-fit:cover;border:1px solid var(--border);cursor:pointer;transition:border-color .2s;opacity:.7; }
+.lightbox-thumb:hover, .lightbox-thumb.active { border-color:var(--gold);opacity:1; }
+.lightbox-right { flex:1;padding:2.5rem 2.5rem 2rem 2rem;border-left:1px solid var(--border); }
+.lightbox-title { font-family:'Cormorant Garamond',serif;font-weight:300;font-size:2.2rem;margin:.5rem 0 1.5rem; }
+.lightbox-features { display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:1.5rem; }
+.lightbox-feature-tag { border:1px solid var(--border);padding:.25rem .7rem;font-size:.68rem;color:var(--gold-dim);font-family:'Syne',sans-serif;letter-spacing:.08em; }
+.lightbox-desc { font-size:.9rem;color:var(--text-muted);line-height:1.9; }
+
+/* ── Portfolio Admin Form ─────────────────────────────────────── */
+.portfolio-admin-form { border-top:1px solid var(--border);padding-top:1.5rem; }
+.pa-entry-row { display:flex;align-items:center;justify-content:space-between;padding:.75rem 0;border-bottom:1px solid var(--border);gap:1rem;flex-wrap:wrap; }
+.pa-entry-title { font-family:'Syne',sans-serif;font-size:.8rem;font-weight:600; }
+.pa-entry-actions { display:flex;gap:.4rem;flex-shrink:0; }
 </style>
 </head>
 <body>
@@ -448,7 +605,9 @@ footer { background:var(--bg);border-top:1px solid var(--border);padding:2.5rem 
   <ul class="nav-links">
     <li><a href="#services">Services</a></li>
     <li><a href="#pricing">Pricing</a></li>
+    <li><a href="#portfolio">Portfolio</a></li>
     <li><a href="#process">Process</a></li>
+    <li><a href="#faq">FAQ</a></li>
     <li><a href="#reviews">Reviews</a></li>
   </ul>
   <div class="nav-right">
@@ -475,10 +634,11 @@ footer { background:var(--bg);border-top:1px solid var(--border);padding:2.5rem 
       <div class="nav-dropdown" id="navDropdown">
         <a href="#reviews" onclick="closeDropdown()">My Review</a>
         <a href="#" onclick="openAdminPanel()" id="adminPanelLink" style="display:none">Admin Panel ⚙</a>
+        <a href="#" onclick="openPortfolioAdmin()" id="portfolioAdminLink" style="display:none">Portfolio Admin ◈</a>
         <button onclick="logout()">Sign Out</button>
       </div>
     </div>
-    <a href="https://discord.gg/AgRmdBZq9u" class="nav-cta" target="_blank" rel="noopener">Order Now</a>
+    <button class="nav-cta" onclick="openPackageBuilder()">Order Now</button>
   </div>
 </nav>
 
@@ -490,7 +650,7 @@ footer { background:var(--bg);border-top:1px solid var(--border);padding:2.5rem 
   <h1>Build a Discord<br>server that <em>commands</em><br>respect.</h1>
   <p class="hero-sub">Clean architecture. Professional layouts. Fully functional systems — delivered fast and built to last.</p>
   <div class="hero-actions">
-    <a href="https://discord.gg/AgRmdBZq9u" class="btn-primary" target="_blank" rel="noopener">Order on Discord</a>
+    <button class="btn-primary" onclick="openPackageBuilder()">Build Your Package</button>
     <a href="https://www.fiverr.com/s/8zwo2jq" class="btn-secondary" target="_blank" rel="noopener">View on Fiverr</a>
   </div>
   <div class="scroll-hint">
@@ -614,25 +774,25 @@ footer { background:var(--bg);border-top:1px solid var(--border);padding:2.5rem 
       <div class="pc-tier">Basic</div>
       <div class="pc-price price-display" data-price-usd="7">$7</div>
       <ul class="pc-list"><li>Clean server layout</li><li>Channel & role setup</li><li>Basic moderation</li><li>Welcome message</li></ul>
-      <a href="https://discord.gg/AgRmdBZq9u" class="pc-cta" target="_blank" rel="noopener">Order Now</a>
+      <button class="pc-cta" onclick="selectBaseAndOpen('basic','Basic',7,1)">Order Now</button>
     </div>
     <div class="price-card reveal reveal-delay-2">
       <div class="pc-tier">Standard</div>
       <div class="pc-price price-display" data-price-usd="14">$14</div>
       <ul class="pc-list"><li>Everything in Basic</li><li>Improved design</li><li>Reaction roles</li><li>Logging system</li><li>Staff roles & permissions</li></ul>
-      <a href="https://discord.gg/AgRmdBZq9u" class="pc-cta" target="_blank" rel="noopener">Order Now</a>
+      <button class="pc-cta" onclick="selectBaseAndOpen('standard','Standard',14,2)">Order Now</button>
     </div>
     <div class="price-card highlight reveal reveal-delay-3">
       <div class="pc-tier">Advanced</div>
       <div class="pc-price price-display" data-price-usd="21">$21</div>
       <ul class="pc-list"><li>Everything in Standard</li><li>Ticket system</li><li>Bot setup</li><li>Auto systems</li><li>Organized staff system</li></ul>
-      <a href="https://discord.gg/AgRmdBZq9u" class="pc-cta" target="_blank" rel="noopener">Order Now</a>
+      <button class="pc-cta" onclick="selectBaseAndOpen('advanced','Advanced',21,2)">Order Now</button>
     </div>
     <div class="price-card reveal reveal-delay-4">
       <div class="pc-tier">Full Setup</div>
       <div class="pc-price price-display" data-price-usd="30">$30</div>
       <ul class="pc-list"><li>Complete server setup</li><li>Any server type</li><li>All features</li><li>Custom systems</li><li>Priority support</li></ul>
-      <a href="https://discord.gg/AgRmdBZq9u" class="pc-cta" target="_blank" rel="noopener">Order Now</a>
+      <button class="pc-cta" onclick="selectBaseAndOpen('full','Full Setup',30,3)">Order Now</button>
     </div>
     <div class="price-card reveal reveal-delay-4">
       <div class="pc-tier">Custom Work</div>
@@ -766,6 +926,100 @@ footer { background:var(--bg);border-top:1px solid var(--border);padding:2.5rem 
   </div>
 </section>
 
+<!-- ═══════════════════════════════════════════════════════════════
+     PORTFOLIO SECTION
+═══════════════════════════════════════════════════════════════ -->
+<section class="portfolio-section" id="portfolio">
+  <div class="portfolio-header reveal">
+    <div>
+      <span class="section-eyebrow">Completed Work</span>
+      <h2 class="section-title">Our <em>portfolio</em>.</h2>
+    </div>
+    <p class="services-desc">A showcase of Discord servers built for clients — each one crafted with precision and purpose.</p>
+  </div>
+  <div class="portfolio-grid" id="portfolioGrid">
+    <div class="portfolio-loading">
+      <span class="loading-dot">.</span><span class="loading-dot" style="animation-delay:.2s">.</span><span class="loading-dot" style="animation-delay:.4s">.</span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     FAQ SECTION
+═══════════════════════════════════════════════════════════════ -->
+<section class="faq-section" id="faq">
+  <div class="faq-header reveal">
+    <div>
+      <span class="section-eyebrow">Common Questions</span>
+      <h2 class="section-title">Frequently asked<br><em>questions</em>.</h2>
+    </div>
+    <div class="faq-search-wrap reveal">
+      <input type="text" class="faq-search" id="faqSearch" placeholder="Search questions…" oninput="filterFaq(this.value)">
+    </div>
+  </div>
+  <div class="faq-list reveal" id="faqList">
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        <span>How long does delivery take?</span>
+        <span class="faq-chevron">+</span>
+      </button>
+      <div class="faq-a"><p>Most orders are completed within <strong>24–48 hours</strong>. More complex setups (Advanced or Full Setup) may take up to 72 hours. You'll always get an estimated timeline when you place your order.</p></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        <span>Do I need to give administrator permissions?</span>
+        <span class="faq-chevron">+</span>
+      </button>
+      <div class="faq-a"><p>Yes, temporarily. I need administrator access to set up roles, channels, permissions, and bots correctly. Once the server is complete, you can revoke the admin role. I'll never use it for anything outside the agreed scope.</p></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        <span>What server types do you support?</span>
+        <span class="faq-chevron">+</span>
+      </button>
+      <div class="faq-a"><p>All types. Gaming communities, study servers, business servers, content creator hubs, roleplay servers, support servers, fan communities — if it's a Discord server, I can build it. I tailor the structure to your specific niche.</p></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        <span>Can I request revisions?</span>
+        <span class="faq-chevron">+</span>
+      </button>
+      <div class="faq-a"><p>Absolutely. Revisions are welcome and expected. If something isn't exactly right — channel names, role colors, permission levels, anything — just let me know and I'll fix it. I build to your vision.</p></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        <span>What bots do you use?</span>
+        <span class="faq-chevron">+</span>
+      </button>
+      <div class="faq-a"><p>I work with any bots you prefer. Common picks include <strong>MEE6</strong>, <strong>Carl-bot</strong>, <strong>Ticket Tool</strong>, <strong>YAGPDB</strong>, <strong>Dyno</strong>, and <strong>Wick</strong> for security. I'll recommend the best fit for your server type and configure them fully.</p></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        <span>What happens after I place an order?</span>
+        <span class="faq-chevron">+</span>
+      </button>
+      <div class="faq-a"><p>After selecting your package and filling the order form, you'll get a formatted order summary to paste into a Discord ticket. Join the Discord, create a ticket, paste your summary, and I'll confirm the details and begin building. Payment is arranged directly in the ticket.</p></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        <span>What if I already have a server that needs work?</span>
+        <span class="faq-chevron">+</span>
+      </button>
+      <div class="faq-a"><p>That falls under <strong>Custom Work</strong>. Whether it's a redesign, cleanup, or adding specific features to an existing server — I can handle it. Pricing is negotiable based on the scope. Reach out in Discord to discuss.</p></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        <span>What payment methods do you accept?</span>
+        <span class="faq-chevron">+</span>
+      </button>
+      <div class="faq-a"><p>I accept <strong>PayPal</strong>, <strong>Wise</strong>, and <strong>GCash</strong>. Payment is typically arranged after we've agreed on the scope and you're happy with the plan. I don't take full payment until you're confident in the order.</p></div>
+    </div>
+    <div class="faq-no-results" id="faqNoResults" style="display:none">
+      <span>No questions match your search.</span>
+    </div>
+  </div>
+</section>
+
 <!-- PAYMENT -->
 <div class="payment reveal">
   <span class="section-eyebrow">Payment</span>
@@ -783,7 +1037,7 @@ footer { background:var(--bg);border-top:1px solid var(--border);padding:2.5rem 
   <h2 class="cta-title reveal">Your server.<br>Built <em>right</em>.</h2>
   <p class="cta-sub reveal">Join the Discord to place your order, or check out my Fiverr profile for more details.</p>
   <div class="cta-buttons reveal">
-    <a href="https://discord.gg/AgRmdBZq9u" class="btn-primary" target="_blank" rel="noopener">Order on Discord</a>
+    <button class="btn-primary" onclick="openPackageBuilder()">Build Your Package</button>
     <a href="https://www.fiverr.com/s/8zwo2jq" class="btn-outline" target="_blank" rel="noopener">View Fiverr Profile</a>
   </div>
 </section>
@@ -793,10 +1047,223 @@ footer { background:var(--bg);border-top:1px solid var(--border);padding:2.5rem 
   <div class="footer-brand">Digital <span>Structure</span> Co.</div>
   <div class="footer-copy">© 2026 shiro.143 · All rights reserved</div>
   <div class="footer-links">
+    <a href="#portfolio">Portfolio</a>
+    <a href="#faq">FAQ</a>
     <a href="https://discord.gg/AgRmdBZq9u" target="_blank" rel="noopener">Discord</a>
     <a href="https://www.fiverr.com/s/8zwo2jq" target="_blank" rel="noopener">Fiverr</a>
   </div>
 </footer>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     PACKAGE BUILDER MODAL
+═══════════════════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="builderOverlay" onclick="closeBuilderIfOutside(event)">
+  <div class="modal-box" id="builderBox">
+    <div class="modal-header">
+      <div>
+        <span class="section-eyebrow">Customise Your Order</span>
+        <h3 class="modal-title">Package <em>Builder</em></h3>
+      </div>
+      <button class="modal-close" onclick="closePackageBuilder()">✕</button>
+    </div>
+    <div class="modal-body builder-body">
+      <div class="builder-left">
+        <div class="builder-section">
+          <span class="builder-section-label">Choose Your Base</span>
+          <div class="base-options" id="baseOptions">
+            <button class="base-opt" data-base="basic" data-price="7" data-days="1" onclick="selectBase(this)">
+              <span class="base-opt-name">Basic</span>
+              <span class="base-opt-price price-display" data-price-usd="7">$7</span>
+              <span class="base-opt-desc">Layout + channels + roles</span>
+            </button>
+            <button class="base-opt" data-base="standard" data-price="14" data-days="2" onclick="selectBase(this)">
+              <span class="base-opt-name">Standard</span>
+              <span class="base-opt-price price-display" data-price-usd="14">$14</span>
+              <span class="base-opt-desc">+ Reaction roles + logging</span>
+            </button>
+            <button class="base-opt active" data-base="advanced" data-price="21" data-days="2" onclick="selectBase(this)">
+              <span class="base-opt-name">Advanced</span>
+              <span class="base-opt-price price-display" data-price-usd="21">$21</span>
+              <span class="base-opt-desc">+ Ticket system + bots</span>
+            </button>
+            <button class="base-opt" data-base="full" data-price="30" data-days="3" onclick="selectBase(this)">
+              <span class="base-opt-name">Full Setup</span>
+              <span class="base-opt-price price-display" data-price-usd="30">$30</span>
+              <span class="base-opt-desc">Complete everything</span>
+            </button>
+          </div>
+        </div>
+        <div class="builder-section">
+          <span class="builder-section-label">Optional Add-ons <span style="color:var(--text-dim);font-weight:400;">(select any)</span></span>
+          <div class="addon-list" id="addonList">
+            <label class="addon-item"><input type="checkbox" value="5" data-name="Verification System" data-days="0"><span class="addon-check"></span><span class="addon-label">Verification System</span><span class="addon-price price-display" data-price-usd="5">+$5</span></label>
+            <label class="addon-item"><input type="checkbox" value="5" data-name="Welcome DM Setup" data-days="0"><span class="addon-check"></span><span class="addon-label">Welcome DM Setup</span><span class="addon-price price-display" data-price-usd="5">+$5</span></label>
+            <label class="addon-item"><input type="checkbox" value="5" data-name="AutoMod Configuration" data-days="0"><span class="addon-check"></span><span class="addon-label">AutoMod Configuration</span><span class="addon-price price-display" data-price-usd="5">+$5</span></label>
+            <label class="addon-item"><input type="checkbox" value="5" data-name="Levelling System (MEE6/Carl)" data-days="1"><span class="addon-check"></span><span class="addon-label">Levelling System</span><span class="addon-price price-display" data-price-usd="5">+$5</span></label>
+            <label class="addon-item"><input type="checkbox" value="5" data-name="Economy Bot Setup" data-days="1"><span class="addon-check"></span><span class="addon-label">Economy Bot Setup</span><span class="addon-price price-display" data-price-usd="5">+$5</span></label>
+            <label class="addon-item"><input type="checkbox" value="5" data-name="Music Bot Setup" data-days="0"><span class="addon-check"></span><span class="addon-label">Music Bot Setup</span><span class="addon-price price-display" data-price-usd="5">+$5</span></label>
+            <label class="addon-item"><input type="checkbox" value="8" data-name="Custom Embed Branding" data-days="1"><span class="addon-check"></span><span class="addon-label">Custom Embed Branding</span><span class="addon-price price-display" data-price-usd="8">+$8</span></label>
+            <label class="addon-item"><input type="checkbox" value="8" data-name="Giveaway System" data-days="0"><span class="addon-check"></span><span class="addon-label">Giveaway System</span><span class="addon-price price-display" data-price-usd="8">+$8</span></label>
+          </div>
+        </div>
+      </div>
+      <div class="builder-right">
+        <div class="builder-summary">
+          <span class="builder-section-label">Your Summary</span>
+          <div class="summary-base-line">
+            <span id="summaryBaseName">Advanced</span>
+            <span id="summaryBasePrice" class="summary-price">$21</span>
+          </div>
+          <div class="summary-addons" id="summaryAddons"></div>
+          <div class="summary-divider"></div>
+          <div class="summary-total-row">
+            <span class="summary-total-label">Total</span>
+            <span class="summary-total-price" id="summaryTotal">$21</span>
+          </div>
+          <div class="summary-delivery">
+            <span class="summary-delivery-label">Estimated Delivery</span>
+            <span class="summary-delivery-val" id="summaryDelivery">2 days</span>
+          </div>
+          <button class="btn-primary" style="width:100%;margin-top:1.5rem;text-align:center;" onclick="proceedToOrderForm()">Continue to Order Form →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     ORDER FORM MODAL
+═══════════════════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="orderOverlay" onclick="closeOrderIfOutside(event)">
+  <div class="modal-box" id="orderBox">
+    <div class="modal-header">
+      <div>
+        <span class="section-eyebrow">Step 2 of 2</span>
+        <h3 class="modal-title">Order <em>Details</em></h3>
+      </div>
+      <button class="modal-close" onclick="closeOrderForm()">✕</button>
+    </div>
+    <div class="modal-body order-body">
+      <div class="order-form-left">
+        <div class="form-field">
+          <label>Server Type <span class="field-required">*</span></label>
+          <select id="ofServerType" class="form-select">
+            <option value="">Select type…</option>
+            <option>Gaming Community</option>
+            <option>Study / Academic</option>
+            <option>Business / Corporate</option>
+            <option>Content Creator</option>
+            <option>Roleplay</option>
+            <option>Fan Community</option>
+            <option>Support Server</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Server Theme / Name <span class="field-required">*</span></label>
+          <input type="text" id="ofTheme" class="form-input" placeholder="e.g. Dark academia gaming server">
+        </div>
+        <div class="form-field">
+          <label>Desired Features / Notes</label>
+          <textarea id="ofNotes" class="form-textarea" placeholder="Anything specific you want — bots, colors, channel names, references, etc."></textarea>
+        </div>
+        <div class="form-field">
+          <label>Preferred Bot(s)</label>
+          <input type="text" id="ofBots" class="form-input" placeholder="e.g. Carl-bot, MEE6, Ticket Tool (or leave blank)">
+        </div>
+      </div>
+      <div class="order-form-right">
+        <div class="order-summary-box">
+          <span class="builder-section-label">Order Summary</span>
+          <div class="order-summary-content" id="orderSummaryPreview"></div>
+          <div class="order-generated" id="orderGenerated" style="display:none">
+            <span class="builder-section-label" style="color:var(--green);margin-top:1.5rem;display:block;">✓ Summary Generated</span>
+            <textarea class="order-copy-text" id="orderCopyText" readonly></textarea>
+            <div style="display:flex;gap:.75rem;margin-top:1rem;flex-wrap:wrap;">
+              <button class="btn-submit" onclick="copyOrderSummary()">Copy Summary</button>
+              <a href="https://discord.gg/AgRmdBZq9u" class="btn-outline" target="_blank" rel="noopener" onclick="closeOrderForm()">Join Discord →</a>
+            </div>
+            <p style="font-size:.75rem;color:var(--text-dim);margin-top:1rem;line-height:1.6;">Copy the summary above, join the Discord, create a ticket, and paste it in. I'll confirm and we'll get started.</p>
+          </div>
+          <button class="btn-submit" id="generateSummaryBtn" onclick="generateOrderSummary()" style="margin-top:1.5rem;width:100%;">Generate Summary</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     PORTFOLIO LIGHTBOX
+═══════════════════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="portfolioLightbox" onclick="closeLightboxIfOutside(event)">
+  <div class="lightbox-box" id="lightboxBox">
+    <button class="modal-close lightbox-close" onclick="closeLightbox()">✕</button>
+    <div class="lightbox-inner">
+      <div class="lightbox-left">
+        <img class="lightbox-cover" id="lightboxCover" src="" alt="">
+        <div class="lightbox-thumbs" id="lightboxThumbs"></div>
+      </div>
+      <div class="lightbox-right">
+        <span class="section-eyebrow" id="lightboxDate"></span>
+        <h2 class="lightbox-title" id="lightboxTitle"></h2>
+        <div class="lightbox-features" id="lightboxFeatures"></div>
+        <p class="lightbox-desc" id="lightboxDesc"></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     PORTFOLIO ADMIN MODAL
+═══════════════════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="portfolioAdminOverlay" onclick="closePortfolioAdminIfOutside(event)">
+  <div class="modal-box" id="portfolioAdminBox" style="max-width:700px;">
+    <div class="modal-header">
+      <div>
+        <span class="section-eyebrow">Admin</span>
+        <h3 class="modal-title">Portfolio <em>Manager</em></h3>
+      </div>
+      <button class="modal-close" onclick="closePortfolioAdmin()">✕</button>
+    </div>
+    <div class="modal-body" style="padding:2rem;">
+      <div id="portfolioAdminEntries" style="margin-bottom:2rem;"></div>
+      <div class="portfolio-admin-form">
+        <span class="builder-section-label" id="portfolioFormLabel">Add New Entry</span>
+        <input type="hidden" id="paEditId">
+        <div class="form-field" style="margin-top:1rem;">
+          <label>Title <span class="field-required">*</span></label>
+          <input type="text" id="paTitle" class="form-input" placeholder="Gaming Community Server">
+        </div>
+        <div class="form-field">
+          <label>Short Description <span class="field-required">*</span></label>
+          <textarea id="paDesc" class="form-textarea" style="min-height:80px;" placeholder="Built a modern gaming community with organized channels…"></textarea>
+        </div>
+        <div class="form-field">
+          <label>Features Included <span class="field-required">*</span> <span style="color:var(--text-dim);font-size:.72rem;">(one per line)</span></label>
+          <textarea id="paFeatures" class="form-textarea" style="min-height:80px;" placeholder="Ticket System&#10;Verification&#10;Role Hierarchy&#10;Moderation Setup"></textarea>
+        </div>
+        <div class="form-field">
+          <label>Completion Date <span style="color:var(--text-dim);font-size:.72rem;">(optional)</span></label>
+          <input type="month" id="paDate" class="form-input">
+        </div>
+        <div class="form-field">
+          <label>Cover Image URL <span class="field-required">*</span></label>
+          <input type="url" id="paCoverUrl" class="form-input" placeholder="https://i.imgur.com/…">
+          <p style="font-size:.72rem;color:var(--text-dim);margin-top:.4rem;">Upload to Imgur or any image host, paste the direct image URL here.</p>
+        </div>
+        <div class="form-field">
+          <label>Screenshot URLs <span style="color:var(--text-dim);font-size:.72rem;">(one per line, optional)</span></label>
+          <textarea id="paScreenshots" class="form-textarea" style="min-height:80px;" placeholder="https://i.imgur.com/…&#10;https://i.imgur.com/…"></textarea>
+        </div>
+        <div style="display:flex;gap:1rem;margin-top:1.5rem;flex-wrap:wrap;">
+          <button class="btn-submit" onclick="savePortfolioEntry()">Save Entry</button>
+          <button class="admin-btn" onclick="resetPortfolioForm()" style="padding:.6rem 1.2rem;">Clear Form</button>
+          <span class="form-msg" id="paMsg"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- ADMIN PANEL -->
 <button class="admin-toggle" id="adminToggle" onclick="openAdminPanel()">⚙</button>
@@ -1289,6 +1756,7 @@ async function logout() {
   document.getElementById('reviewFormWrap').classList.remove('visible');
   document.getElementById('adminToggle').classList.remove('visible');
   document.getElementById('adminPanelLink').style.display = 'none';
+  document.getElementById('portfolioAdminLink').style.display = 'none';
   closeDropdown();
   showToast('Signed out.');
 }
@@ -1575,16 +2043,19 @@ async function init() {
       if (isAdmin) {
         document.getElementById('adminToggle').classList.add('visible');
         document.getElementById('adminPanelLink').style.display = '';
+        document.getElementById('portfolioAdminLink').style.display = '';
       }
 
       await loadReviews();
       populateForm();
+      renderPortfolio(); // re-render to show admin controls
     } else {
       currentUser = null; currentProfile = null; isAdmin = false;
       updateNavUI(null);
       document.getElementById('authGate').style.display = '';
       document.getElementById('reviewFormWrap').classList.remove('visible');
       await loadReviews();
+      renderPortfolio(); // re-render to hide admin controls
     }
   });
 
@@ -1600,6 +2071,460 @@ async function init() {
 }
 
 init();
+</script>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     PACKAGE BUILDER + ORDER FORM  JS
+═══════════════════════════════════════════════════════════════════════ -->
+<script>
+'use strict';
+
+// ── State ─────────────────────────────────────────────────────────────────
+let builderState = {
+  base: 'advanced',
+  baseName: 'Advanced',
+  basePrice: 21,
+  baseDays: 2,
+  addons: [],   // [{name, price, days}]
+};
+
+// ── Package Builder ───────────────────────────────────────────────────────
+function openPackageBuilder() {
+  document.getElementById('builderOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  updateBuilderSummary();
+  // Re-render currency on add-on prices
+  CurrencyService.setCurrency(CurrencyService.currency, false);
+}
+function closePackageBuilder() {
+  document.getElementById('builderOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function closeBuilderIfOutside(e) {
+  if (e.target === document.getElementById('builderOverlay')) closePackageBuilder();
+}
+
+function selectBase(btn) {
+  document.querySelectorAll('.base-opt').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  builderState.base     = btn.dataset.base;
+  builderState.baseName = btn.querySelector('.base-opt-name').textContent;
+  builderState.basePrice= parseFloat(btn.dataset.price);
+  builderState.baseDays = parseInt(btn.dataset.days, 10);
+  updateBuilderSummary();
+}
+
+document.getElementById('addonList').addEventListener('change', () => {
+  builderState.addons = [];
+  document.querySelectorAll('#addonList input:checked').forEach(cb => {
+    builderState.addons.push({
+      name:  cb.dataset.name,
+      price: parseFloat(cb.value),
+      days:  parseInt(cb.dataset.days, 10),
+    });
+  });
+  updateBuilderSummary();
+});
+
+function updateBuilderSummary() {
+  const addonTotal = builderState.addons.reduce((s, a) => s + a.price, 0);
+  const total      = builderState.basePrice + addonTotal;
+  const addonDays  = builderState.addons.reduce((s, a) => s + a.days, 0);
+  const days       = builderState.baseDays + addonDays;
+
+  document.getElementById('summaryBaseName').textContent  = builderState.baseName;
+  document.getElementById('summaryBasePrice').textContent = CurrencyService.formatPrice(builderState.basePrice);
+  document.getElementById('summaryTotal').textContent     = CurrencyService.formatPrice(total);
+  document.getElementById('summaryDelivery').textContent  = days <= 1 ? '1 day' : `${days} days`;
+
+  const addonsEl = document.getElementById('summaryAddons');
+  if (!builderState.addons.length) {
+    addonsEl.innerHTML = '<span style="font-size:.72rem;color:var(--text-dim);font-family:\'Syne\',sans-serif;">No add-ons selected</span>';
+  } else {
+    addonsEl.innerHTML = builderState.addons.map(a => `
+      <div class="summary-addon-row">
+        <span class="summary-addon-name">${escapeHtml(a.name)}</span>
+        <span class="summary-addon-val">+${CurrencyService.formatPrice(a.price)}</span>
+      </div>`).join('');
+  }
+}
+
+// ── Order Form ────────────────────────────────────────────────────────────
+function proceedToOrderForm() {
+  closePackageBuilder();
+  document.getElementById('orderOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  document.getElementById('orderGenerated').style.display = 'none';
+  document.getElementById('generateSummaryBtn').style.display = '';
+  renderOrderSummaryPreview();
+}
+function closeOrderForm() {
+  document.getElementById('orderOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function closeOrderIfOutside(e) {
+  if (e.target === document.getElementById('orderOverlay')) closeOrderForm();
+}
+
+function renderOrderSummaryPreview() {
+  const addonTotal = builderState.addons.reduce((s, a) => s + a.price, 0);
+  const total      = builderState.basePrice + addonTotal;
+  const addonDays  = builderState.addons.reduce((s, a) => s + a.days, 0);
+  const days       = builderState.baseDays + addonDays;
+  const addonsStr  = builderState.addons.length
+    ? builderState.addons.map(a => a.name).join(', ')
+    : 'None';
+
+  document.getElementById('orderSummaryPreview').innerHTML = `
+    <div class="osc-row"><span class="osc-label">Package</span><span class="osc-val">${escapeHtml(builderState.baseName)}</span></div>
+    <div class="osc-row"><span class="osc-label">Add-ons</span><span class="osc-val">${escapeHtml(addonsStr)}</span></div>
+    <div class="osc-row"><span class="osc-label">Total (USD)</span><span class="osc-val">$${total}</span></div>
+    <div class="osc-row"><span class="osc-label">Delivery</span><span class="osc-val">${days <= 1 ? '1 day' : days + ' days'}</span></div>
+  `;
+}
+
+function generateOrderSummary() {
+  const serverType = document.getElementById('ofServerType').value.trim();
+  const theme      = document.getElementById('ofTheme').value.trim();
+  const notes      = document.getElementById('ofNotes').value.trim();
+  const bots       = document.getElementById('ofBots').value.trim();
+
+  if (!serverType) { showToast('Please select a server type.', 'err'); return; }
+  if (!theme)      { showToast('Please enter a server theme / name.', 'err'); return; }
+
+  const addonTotal = builderState.addons.reduce((s, a) => s + a.price, 0);
+  const total      = builderState.basePrice + addonTotal;
+  const addonDays  = builderState.addons.reduce((s, a) => s + a.days, 0);
+  const days       = builderState.baseDays + addonDays;
+  const addonsStr  = builderState.addons.length
+    ? builderState.addons.map(a => `  - ${a.name}`).join('\n')
+    : '  - None';
+
+  const summary = `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  📋 ORDER SUMMARY — Digital Structure Co.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📦 Package: ${builderState.baseName} ($${builderState.basePrice})
+
+✨ Add-ons:
+${addonsStr}
+
+💰 Total: $${total} USD
+⏱️ Estimated Delivery: ${days <= 1 ? '1 day' : days + ' days'}
+
+🏷️ Server Type: ${serverType}
+🎨 Theme / Name: ${theme}
+${bots ? `🤖 Preferred Bots: ${bots}\n` : ''}
+📝 Notes / Features:
+${notes || 'None specified'}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Generated by digitalstructure.co`;
+
+  document.getElementById('orderCopyText').value = summary;
+  document.getElementById('orderGenerated').style.display = '';
+  document.getElementById('generateSummaryBtn').style.display = 'none';
+}
+
+function copyOrderSummary() {
+  const el = document.getElementById('orderCopyText');
+  el.select();
+  document.execCommand('copy');
+  showToast('Order summary copied!');
+}
+
+// Pre-select a base package and open the builder
+function selectBaseAndOpen(baseKey, baseName, basePrice, baseDays) {
+  builderState.base      = baseKey;
+  builderState.baseName  = baseName;
+  builderState.basePrice = basePrice;
+  builderState.baseDays  = baseDays;
+  builderState.addons    = [];
+  // Uncheck all addons
+  document.querySelectorAll('#addonList input').forEach(cb => cb.checked = false);
+  // Update base option active state
+  document.querySelectorAll('.base-opt').forEach(b => {
+    b.classList.toggle('active', b.dataset.base === baseKey);
+  });
+  openPackageBuilder();
+}
+</script>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     FAQ  JS
+═══════════════════════════════════════════════════════════════════════ -->
+<script>
+'use strict';
+
+function toggleFaq(btn) {
+  const item = btn.closest('.faq-item');
+  const isOpen = item.classList.contains('open');
+  // Close all
+  document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
+  // Open clicked if was closed
+  if (!isOpen) item.classList.add('open');
+}
+
+function filterFaq(query) {
+  const q = query.toLowerCase().trim();
+  let anyVisible = false;
+  document.querySelectorAll('.faq-item').forEach(item => {
+    const text = item.textContent.toLowerCase();
+    const match = !q || text.includes(q);
+    item.classList.toggle('hidden', !match);
+    if (match) anyVisible = true;
+  });
+  document.getElementById('faqNoResults').style.display = anyVisible ? 'none' : '';
+}
+</script>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     PORTFOLIO  JS  (public display + admin management)
+═══════════════════════════════════════════════════════════════════════ -->
+<script>
+'use strict';
+
+let allPortfolioEntries = [];
+let lightboxEntry = null;
+
+// ── Load & Render ─────────────────────────────────────────────────────────
+async function loadPortfolio() {
+  const { data, error } = await sb
+    .from('portfolio')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    document.getElementById('portfolioGrid').innerHTML =
+      '<div class="portfolio-empty">Portfolio coming soon.</div>';
+    return;
+  }
+
+  allPortfolioEntries = data || [];
+  renderPortfolio();
+}
+
+function renderPortfolio() {
+  const grid = document.getElementById('portfolioGrid');
+  if (!allPortfolioEntries.length) {
+    grid.innerHTML = '<div class="portfolio-empty" style="font-family:\'Cormorant Garamond\',serif;font-style:italic;color:var(--text-dim);grid-column:1/-1;padding:4rem;text-align:center;">No projects yet — check back soon.</div>';
+    return;
+  }
+
+  grid.innerHTML = allPortfolioEntries.map(entry => {
+    const features = (entry.features || []).slice(0, 4);
+    const featureTags = features.map(f => `<span class="portfolio-feature-tag">${escapeHtml(f)}</span>`).join('');
+    const coverImg = entry.cover_url
+      ? `<img class="portfolio-card-cover" src="${escapeHtml(entry.cover_url)}" alt="${escapeHtml(entry.title)}" loading="lazy">`
+      : `<div class="portfolio-card-cover-placeholder">◈</div>`;
+    const dateStr = entry.completion_date
+      ? new Date(entry.completion_date + '-01').toLocaleDateString('en-US', { year:'numeric', month:'long' })
+      : '';
+    const adminControls = isAdmin ? `
+      <div class="portfolio-card-admin">
+        <button class="portfolio-admin-btn" onclick="event.stopPropagation();editPortfolioEntry('${entry.id}')">Edit</button>
+        <button class="portfolio-admin-btn del" onclick="event.stopPropagation();deletePortfolioEntry('${entry.id}')">Del</button>
+      </div>` : '';
+
+    return `<div class="portfolio-card reveal" onclick="openLightbox('${entry.id}')">
+      ${adminControls}
+      ${coverImg}
+      <div class="portfolio-card-body">
+        <div class="portfolio-card-title">${escapeHtml(entry.title)}</div>
+        <div class="portfolio-card-features">${featureTags}</div>
+        <div class="portfolio-card-desc">${escapeHtml(entry.description || '')}</div>
+        ${dateStr ? `<div class="portfolio-card-date">${dateStr}</div>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+
+  // Re-observe new reveal elements
+  document.querySelectorAll('.portfolio-card.reveal').forEach(el => obs.observe(el));
+}
+
+// ── Lightbox ──────────────────────────────────────────────────────────────
+function openLightbox(id) {
+  const entry = allPortfolioEntries.find(e => e.id === id);
+  if (!entry) return;
+  lightboxEntry = entry;
+
+  document.getElementById('lightboxTitle').textContent = entry.title;
+  document.getElementById('lightboxDesc').textContent  = entry.description || '';
+
+  const dateStr = entry.completion_date
+    ? 'Completed ' + new Date(entry.completion_date + '-01').toLocaleDateString('en-US', { year:'numeric', month:'long' })
+    : '';
+  document.getElementById('lightboxDate').textContent = dateStr;
+
+  const featuresEl = document.getElementById('lightboxFeatures');
+  featuresEl.innerHTML = (entry.features || [])
+    .map(f => `<span class="lightbox-feature-tag">${escapeHtml(f)}</span>`).join('');
+
+  // Build image list: cover + screenshots
+  const allImages = [];
+  if (entry.cover_url) allImages.push(entry.cover_url);
+  (entry.screenshots || []).forEach(s => { if (s) allImages.push(s); });
+
+  const coverEl = document.getElementById('lightboxCover');
+  coverEl.src = allImages[0] || '';
+  coverEl.style.display = allImages[0] ? '' : 'none';
+
+  const thumbsEl = document.getElementById('lightboxThumbs');
+  if (allImages.length > 1) {
+    thumbsEl.innerHTML = allImages.map((img, i) =>
+      `<img class="lightbox-thumb${i===0?' active':''}" src="${escapeHtml(img)}" alt="" onclick="switchLightboxImage(this, '${escapeHtml(img)}')" loading="lazy">`
+    ).join('');
+  } else {
+    thumbsEl.innerHTML = '';
+  }
+
+  document.getElementById('portfolioLightbox').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function switchLightboxImage(thumb, src) {
+  document.getElementById('lightboxCover').src = src;
+  document.querySelectorAll('.lightbox-thumb').forEach(t => t.classList.remove('active'));
+  thumb.classList.add('active');
+}
+
+function closeLightbox() {
+  document.getElementById('portfolioLightbox').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function closeLightboxIfOutside(e) {
+  if (e.target === document.getElementById('portfolioLightbox')) closeLightbox();
+}
+
+// ── Admin Management ──────────────────────────────────────────────────────
+function openPortfolioAdmin() {
+  if (!isAdmin) return;
+  closeDropdown();
+  resetPortfolioForm();
+  renderPortfolioAdminEntries();
+  document.getElementById('portfolioAdminOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closePortfolioAdmin() {
+  document.getElementById('portfolioAdminOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function closePortfolioAdminIfOutside(e) {
+  if (e.target === document.getElementById('portfolioAdminOverlay')) closePortfolioAdmin();
+}
+
+function renderPortfolioAdminEntries() {
+  const el = document.getElementById('portfolioAdminEntries');
+  if (!allPortfolioEntries.length) {
+    el.innerHTML = '<p style="color:var(--text-dim);font-size:.8rem;">No entries yet.</p>';
+    return;
+  }
+  el.innerHTML = allPortfolioEntries.map(e => `
+    <div class="pa-entry-row">
+      <span class="pa-entry-title">${escapeHtml(e.title)}</span>
+      <div class="pa-entry-actions">
+        <button class="admin-btn accent" onclick="editPortfolioEntry('${e.id}')">Edit</button>
+        <button class="admin-btn danger" onclick="deletePortfolioEntry('${e.id}')">Delete</button>
+      </div>
+    </div>`).join('');
+}
+
+function resetPortfolioForm() {
+  document.getElementById('paEditId').value       = '';
+  document.getElementById('paTitle').value        = '';
+  document.getElementById('paDesc').value         = '';
+  document.getElementById('paFeatures').value     = '';
+  document.getElementById('paDate').value         = '';
+  document.getElementById('paCoverUrl').value     = '';
+  document.getElementById('paScreenshots').value  = '';
+  document.getElementById('paMsg').textContent    = '';
+  document.getElementById('paMsg').className      = 'form-msg';
+  document.getElementById('portfolioFormLabel').textContent = 'Add New Entry';
+}
+
+function editPortfolioEntry(id) {
+  const entry = allPortfolioEntries.find(e => e.id === id);
+  if (!entry) return;
+  // Open admin modal if not open
+  if (!document.getElementById('portfolioAdminOverlay').classList.contains('open')) {
+    openPortfolioAdmin();
+  }
+  document.getElementById('paEditId').value       = entry.id;
+  document.getElementById('paTitle').value        = entry.title || '';
+  document.getElementById('paDesc').value         = entry.description || '';
+  document.getElementById('paFeatures').value     = (entry.features || []).join('\n');
+  document.getElementById('paDate').value         = entry.completion_date || '';
+  document.getElementById('paCoverUrl').value     = entry.cover_url || '';
+  document.getElementById('paScreenshots').value  = (entry.screenshots || []).join('\n');
+  document.getElementById('portfolioFormLabel').textContent = 'Edit Entry';
+  document.getElementById('portfolioAdminBox').scrollTop = 9999;
+}
+
+async function savePortfolioEntry() {
+  const editId    = document.getElementById('paEditId').value.trim();
+  const title     = document.getElementById('paTitle').value.trim();
+  const desc      = document.getElementById('paDesc').value.trim();
+  const features  = document.getElementById('paFeatures').value.split('\n').map(s=>s.trim()).filter(Boolean);
+  const date      = document.getElementById('paDate').value || null;
+  const coverUrl  = document.getElementById('paCoverUrl').value.trim();
+  const shots     = document.getElementById('paScreenshots').value.split('\n').map(s=>s.trim()).filter(Boolean);
+  const msg       = document.getElementById('paMsg');
+
+  if (!title)    { msg.textContent='Title is required.'; msg.className='form-msg error'; return; }
+  if (!desc)     { msg.textContent='Description is required.'; msg.className='form-msg error'; return; }
+  if (!features.length) { msg.textContent='Add at least one feature.'; msg.className='form-msg error'; return; }
+  if (!coverUrl) { msg.textContent='Cover image URL is required.'; msg.className='form-msg error'; return; }
+
+  msg.textContent = 'Saving…'; msg.className = 'form-msg';
+
+  const payload = {
+    title,
+    description: desc,
+    features,
+    completion_date: date,
+    cover_url: coverUrl,
+    screenshots: shots,
+  };
+
+  let result;
+  if (editId) {
+    result = await sb.from('portfolio').update(payload).eq('id', editId);
+  } else {
+    result = await sb.from('portfolio').insert(payload);
+  }
+
+  if (result.error) {
+    msg.textContent = 'Save failed: ' + result.error.message;
+    msg.className = 'form-msg error';
+    showToast('Save failed.', 'err');
+  } else {
+    msg.textContent = editId ? 'Entry updated!' : 'Entry added!';
+    msg.className = 'form-msg success';
+    showToast(editId ? 'Portfolio entry updated!' : 'Portfolio entry added!');
+    resetPortfolioForm();
+    await loadPortfolio();
+    renderPortfolioAdminEntries();
+  }
+}
+
+async function deletePortfolioEntry(id) {
+  if (!confirm('Delete this portfolio entry? This cannot be undone.')) return;
+  const { error } = await sb.from('portfolio').delete().eq('id', id);
+  if (error) { showToast('Delete failed.', 'err'); return; }
+  showToast('Portfolio entry deleted.', 'err');
+  await loadPortfolio();
+  renderPortfolioAdminEntries();
+}
+
+// ── Integrate portfolio load into init auth flow ───────────────────────────
+// We hook into the existing auth state change already in init().
+// loadPortfolio() is called from initPortfolio() below, which runs once on page load.
+async function initPortfolio() {
+  await loadPortfolio();
+}
+
+initPortfolio();
 </script>
 </body>
 </html>
