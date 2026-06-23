@@ -214,7 +214,12 @@ section { padding:7rem 4rem; }
 
 /* PRICING */
 .pricing { background:var(--bg); }
-.pricing-grid { display:grid;grid-template-columns:repeat(5,1fr);gap:1rem;margin-top:3.5rem; }
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  margin-top: 3.5rem;
+}
 .price-card { border:1px solid var(--border);padding:2rem 1.5rem;display:flex;flex-direction:column;transition:border-color .3s,transform .3s;position:relative; }
 .price-card:hover { border-color:var(--border-hover);transform:translateY(-4px); }
 .price-card.highlight { border-color:var(--gold-dim);background:var(--bg3); }
