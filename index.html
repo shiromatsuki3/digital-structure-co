@@ -1767,8 +1767,64 @@ async function logout() {
 }
 
 async function getProfile(userId) {
-  const { data } = await sb.from('profiles').select('*').eq('id', userId).single();
-  return data;
+    // Try to get existing profile
+    const { data: existing } = await sb
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .maybeSingle();
+
+    if (existing) return existing;
+
+    // Get authenticated Discord user
+    const {
+        data: { user },
+        error: authError
+    } = await sb.auth.getUser();
+
+    if (authError || !user) {
+        console.error(authError);
+        return null;
+    }
+
+    const metadata = user.user_metadata || {};
+
+    const newProfile = {
+        id: user.id,
+        username:
+            metadata.preferred_username ||
+            metadata.user_name ||
+            metadata.name ||
+            user.email,
+
+        display_name:
+            metadata.full_name ||
+            metadata.name ||
+            metadata.preferred_username ||
+            metadata.user_name,
+
+        avatar_url: metadata.avatar_url || "",
+
+        discord_id:
+            metadata.provider_id ||
+            metadata.sub ||
+            null,
+
+        is_admin: false
+    };
+
+    const { data, error } = await sb
+        .from("profiles")
+        .insert(newProfile)
+        .select()
+        .single();
+
+    if (error) {
+        console.error("Failed creating profile:", error);
+        return null;
+    }
+
+    return data;
 }
 
 function updateNavUI(profile) {
