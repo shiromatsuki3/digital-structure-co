@@ -144,7 +144,8 @@ nav { position:fixed;top:0;left:0;right:0;z-index:500;padding:1.5rem 4rem;displa
 .nav-more-dropdown a { display:block;width:100%;text-align:left;padding:.75rem 1rem;font-family:'Syne',sans-serif;font-size:.72rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);text-decoration:none;transition:all .2s;border-bottom:1px solid var(--border); }
 .nav-more-dropdown a:last-child { border-bottom:none; }
 .nav-more-dropdown a:hover { background:var(--bg4);color:var(--gold); }
-.nav-login-btn { background:transparent;border:1px solid var(--border);color:var(--text-muted);padding:.55rem 1.2rem;font-family:'Syne',sans-serif;font-size:.72rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;transition:all .3s;display:flex;align-items:center;gap:.5rem; }
+.nav-login-btn { background:transparent;border:1px solid var(--border);color:var(--text-muted);padding:.55rem 1.2rem;font-family:'Syne',sans-serif;font-size:.72rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;transition:all .3s;align-items:center;gap:.5rem; display:none; }
+.nav-login-btn.owner-visible { display:flex; }
 .nav-login-btn:hover { border-color:var(--gold-dim);color:var(--gold); }
 .discord-icon { width:16px;height:16px;fill:currentColor; }
 
@@ -1876,19 +1877,39 @@ async function getProfile(userId) {
     return data;
 }
 
+// The Discord login button is hidden from the public by default — see
+// initOwnerAccess() below for how the site owner reveals it.
 function updateNavUI(profile) {
   const loginBtn = document.getElementById('navLoginBtn');
   const navUser = document.getElementById('navUser');
   if (!profile) {
-    loginBtn.style.display = '';
+    if (localStorage.getItem(OWNER_ACCESS_KEY) === '1') {
+      loginBtn.classList.add('owner-visible');
+    }
     navUser.classList.remove('visible');
     return;
   }
-  loginBtn.style.display = 'none';
+  loginBtn.classList.remove('owner-visible');
   navUser.classList.add('visible');
   document.getElementById('navAvatar').src = profile.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.display_name||'U')}&background=1e1e1e&color=c9a84c`;
   document.getElementById('navUsername').textContent = profile.display_name || profile.username || 'User';
 }
+
+// ── OWNER ACCESS (hides the Discord login button from the public) ──────
+// Visit yoursite.com/#admin-login once on your own browser to reveal the
+// login button and unlock it permanently on that browser (via
+// localStorage). Everyone else never sees it.
+const OWNER_ACCESS_KEY = 'dsc_owner_access';
+function initOwnerAccess() {
+  if (window.location.hash === '#admin-login') {
+    localStorage.setItem(OWNER_ACCESS_KEY, '1');
+    history.replaceState(null, '', window.location.pathname + window.location.search);
+  }
+  if (localStorage.getItem(OWNER_ACCESS_KEY) === '1') {
+    document.getElementById('navLoginBtn').classList.add('owner-visible');
+  }
+}
+initOwnerAccess();
 
 function toggleDropdown() {
   document.getElementById('navDropdown').classList.toggle('open');
