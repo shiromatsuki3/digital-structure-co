@@ -1,0 +1,1259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard — Digital Structure Co.</title>
+<meta name="robots" content="noindex, nofollow">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --gold: #c9a84c; --gold-light: #e8c97a; --gold-dim: #7a6230;
+  --bg: #080808; --bg2: #0f0f0f; --bg3: #161616; --bg4: #1e1e1e;
+  --text: #f0ede6; --text-muted: #8a8680; --text-dim: #4a4744;
+  --border: rgba(201,168,76,0.15); --border-hover: rgba(201,168,76,0.4);
+  --red: #e05252; --green: #52e08a;
+}
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; font-weight: 300; min-height: 100vh; }
+
+/* ── SHARED FORM / MODAL PRIMITIVES (matches main site) ────────── */
+.section-eyebrow { font-family:'Syne',sans-serif;font-weight:500;font-size:.68rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem;display:block; }
+.form-field { margin-bottom:1.25rem; }
+.form-field label { font-family:'Syne',sans-serif;font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-muted);margin-bottom:.6rem;display:block; }
+.form-input { width:100%;background:var(--bg4);border:1px solid var(--border);color:var(--text);padding:.8rem 1rem;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:300;outline:none;transition:border-color .3s; }
+.form-input:focus { border-color:var(--gold-dim); }
+.form-select { width:100%;background:var(--bg4);border:1px solid var(--border);color:var(--text);padding:.8rem 1rem;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:300;outline:none;appearance:none;cursor:pointer;transition:border-color .3s; }
+.form-select:focus { border-color:var(--gold-dim); }
+.form-textarea { width:100%;background:var(--bg4);border:1px solid var(--border);color:var(--text);padding:.8rem 1rem;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:300;resize:vertical;min-height:90px;outline:none;transition:border-color .3s; }
+.form-textarea:focus { border-color:var(--gold-dim); }
+.field-required { color:var(--gold); }
+.btn-submit { background:var(--gold);color:var(--bg);padding:.8rem 2rem;font-family:'Syne',sans-serif;font-size:.78rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;border:none;cursor:pointer;transition:all .3s; }
+.btn-submit:hover { background:var(--gold-light); }
+.btn-submit:disabled { opacity:.5;cursor:not-allowed; }
+.form-msg { font-size:.8rem;font-family:'Syne',sans-serif;font-weight:500; }
+.form-msg.success { color:var(--green); }
+.form-msg.error { color:var(--red); }
+.admin-btn { padding:.45rem .9rem;font-family:'Syne',sans-serif;font-size:.65rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;border:1px solid var(--border);background:none;cursor:pointer;transition:all .2s;color:var(--text-muted); }
+.admin-btn:hover { color:var(--text);border-color:var(--text-dim); }
+.admin-btn.danger:hover { color:var(--red);border-color:var(--red); }
+.admin-btn.accent:hover { color:var(--gold);border-color:var(--gold); }
+.admin-btn.success:hover { color:var(--green);border-color:var(--green); }
+.admin-btn.active { color:var(--gold);border-color:var(--gold); }
+
+.modal-overlay { position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:800;display:none;align-items:center;justify-content:center;padding:2rem;backdrop-filter:blur(4px); }
+.modal-overlay.open { display:flex; }
+.modal-box { background:var(--bg3);border:1px solid var(--border);max-width:900px;width:100%;max-height:90vh;overflow-y:auto;position:relative; }
+.modal-box::-webkit-scrollbar { width:3px; }
+.modal-box::-webkit-scrollbar-thumb { background:var(--gold-dim); }
+.modal-header { padding:2rem 2.5rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:flex-start;position:sticky;top:0;background:var(--bg3);z-index:1; }
+.modal-title { font-family:'Cormorant Garamond',serif;font-weight:300;font-size:1.8rem;line-height:1.1;margin-top:.3rem; }
+.modal-title em { font-style:italic;color:var(--gold); }
+.modal-close { background:none;border:none;color:var(--text-muted);font-size:1.3rem;cursor:pointer;line-height:1;padding:.25rem;transition:color .2s; }
+.modal-close:hover { color:var(--text); }
+.modal-body { padding:2rem 2.5rem; }
+
+.toast { position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(100px);background:var(--bg3);border:1px solid var(--border);padding:.8rem 2rem;font-family:'Syne',sans-serif;font-size:.75rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;z-index:999;transition:transform .4s cubic-bezier(.22,1,.36,1);pointer-events:none;max-width:90vw;text-align:center; }
+.toast.show { transform:translateX(-50%) translateY(0); }
+.toast.gold { border-color:var(--gold-dim);color:var(--gold); }
+.toast.err { border-color:var(--red);color:var(--red); }
+
+/* ── LAYOUT ──────────────────────────────────────────────────────── */
+.admin-nav { position:sticky;top:0;z-index:500;padding:1.2rem 3rem;display:flex;align-items:center;justify-content:space-between;background:rgba(8,8,8,.95);backdrop-filter:blur(12px);border-bottom:1px solid rgba(201,168,76,.1); }
+.admin-nav-logo { font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text);text-decoration:none; }
+.admin-nav-logo span { color:var(--gold); }
+.admin-nav-tag { font-family:'Syne',sans-serif;font-size:.65rem;letter-spacing:.2em;color:var(--text-dim);text-transform:uppercase;margin-left:.75rem;border-left:1px solid var(--border);padding-left:.75rem; }
+.admin-nav-right { display:flex;align-items:center;gap:1.25rem; }
+.admin-nav-link { color:var(--text-muted);font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;font-family:'Syne',sans-serif;font-weight:600;transition:color .2s; }
+.admin-nav-link:hover, .admin-nav-link.active { color:var(--gold); }
+.admin-nav-user { display:flex;align-items:center;gap:.6rem; }
+.admin-nav-avatar { width:28px;height:28px;border-radius:50%;object-fit:cover;border:1px solid var(--border); }
+.admin-nav-name { font-size:.75rem;color:var(--text-muted);font-family:'Syne',sans-serif; }
+
+.admin-wrap { max-width:1400px;margin:0 auto;padding:3rem; }
+.admin-page-header { display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:2.5rem;flex-wrap:wrap;gap:1.5rem; }
+.admin-page-title { font-family:'Cormorant Garamond',serif;font-weight:300;font-size:clamp(2rem,3.5vw,2.8rem); }
+.admin-page-title em { font-style:italic;color:var(--gold); }
+
+/* ── GATE / LOADING STATES ──────────────────────────────────────── */
+.gate-screen { min-height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1.5rem;padding:2rem;text-align:center; }
+.gate-icon { font-size:2rem;color:var(--gold); }
+.gate-text { font-family:'Syne',sans-serif;font-size:.85rem;letter-spacing:.1em;color:var(--text-muted);max-width:420px;line-height:1.8; }
+.gate-btn { background:var(--gold);color:var(--bg);padding:.85rem 2.2rem;font-family:'Syne',sans-serif;font-size:.78rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;border:none;cursor:pointer;transition:all .3s;text-decoration:none;display:inline-flex;align-items:center;gap:.6rem; }
+.gate-btn:hover { background:var(--gold-light); }
+
+/* ── STAT CARDS ──────────────────────────────────────────────────── */
+.stats-grid { display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);margin-bottom:1px; }
+.stat-card { background:var(--bg3);padding:1.75rem 1.5rem; }
+.stat-card-label { font-family:'Syne',sans-serif;font-size:.62rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--text-dim);margin-bottom:.75rem; }
+.stat-card-value { font-family:'Cormorant Garamond',serif;font-weight:400;font-size:2.4rem;color:var(--text);line-height:1; }
+.stat-card-value.gold { color:var(--gold); }
+.stat-card-value.red { color:var(--red); }
+.stats-grid-secondary { margin-top:2.5rem; }
+
+/* ── ANALYTICS ───────────────────────────────────────────────────── */
+.analytics-section { background:var(--bg3);border:1px solid var(--border);padding:2rem;margin-top:2.5rem; }
+.analytics-header { display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem;flex-wrap:wrap;gap:1rem; }
+.analytics-title { font-family:'Syne',sans-serif;font-size:.7rem;font-weight:700;letter-spacing:.25em;text-transform:uppercase;color:var(--gold); }
+.metric-toggle { display:flex;gap:.5rem; }
+.chart-wrap { display:flex;align-items:flex-end;gap:1.5rem;height:220px;padding:0 .5rem;border-bottom:1px solid var(--border);position:relative; }
+.chart-bar-col { flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:.6rem; }
+.chart-bar { width:100%;max-width:42px;background:linear-gradient(to top,var(--gold-dim),var(--gold));transition:height .6s cubic-bezier(.22,1,.36,1);min-height:2px;position:relative; }
+.chart-bar-value { font-family:'Syne',sans-serif;font-size:.65rem;color:var(--gold);font-weight:700;position:absolute;top:-1.4rem;left:50%;transform:translateX(-50%);white-space:nowrap; }
+.chart-bar-label { font-family:'Syne',sans-serif;font-size:.65rem;letter-spacing:.08em;color:var(--text-dim);margin-top:.75rem; }
+.chart-empty { color:var(--text-dim);font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.1rem;text-align:center;padding:3rem 0;width:100%; }
+
+/* ── PROJECT LIST ────────────────────────────────────────────────── */
+.projects-toolbar { display:flex;justify-content:space-between;align-items:center;margin:2.5rem 0 1.5rem;flex-wrap:wrap;gap:1rem; }
+.toolbar-controls { display:flex;gap:.75rem;flex-wrap:wrap;align-items:center; }
+.filter-tabs { display:flex;gap:.4rem;flex-wrap:wrap; }
+.filter-tab { padding:.4rem .9rem;font-family:'Syne',sans-serif;font-size:.62rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;border:1px solid var(--border);background:none;color:var(--text-muted);cursor:pointer;transition:all .25s; }
+.filter-tab.active, .filter-tab:hover { border-color:var(--gold-dim);color:var(--gold); }
+.sort-select { background:var(--bg4);border:1px solid var(--border);color:var(--text-muted);padding:.42rem .8rem;font-family:'Syne',sans-serif;font-size:.65rem;letter-spacing:.08em;text-transform:uppercase;outline:none;cursor:pointer; }
+.search-input { background:var(--bg4);border:1px solid var(--border);color:var(--text);padding:.42rem .9rem;font-family:'DM Sans',sans-serif;font-size:.8rem;outline:none;min-width:200px; }
+.search-input:focus { border-color:var(--gold-dim); }
+
+.projects-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:1.25rem; }
+.project-card { background:var(--bg3);border:1px solid var(--border);padding:1.5rem;transition:border-color .3s;position:relative; }
+.project-card:hover { border-color:var(--border-hover); }
+.project-card.overdue { border-color:rgba(224,82,82,.4); }
+.project-card-top { display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.4rem;gap:.5rem; }
+.project-card-name { font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;letter-spacing:.02em; }
+.project-card-type { font-size:.7rem;color:var(--text-dim);font-family:'Syne',sans-serif;letter-spacing:.08em;text-transform:uppercase;margin-bottom:1rem; }
+.status-pill { padding:.2rem .65rem;font-family:'Syne',sans-serif;font-size:.6rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;border:1px solid; }
+.status-pill.pending { color:var(--text-muted);border-color:var(--border); }
+.status-pill.in-progress { color:var(--gold);border-color:var(--gold-dim); }
+.status-pill.review { color:#7ab8e0;border-color:rgba(122,184,224,.4); }
+.status-pill.completed { color:var(--green);border-color:rgba(82,224,138,.4); }
+.status-pill.cancelled { color:var(--text-dim);border-color:var(--border);text-decoration:line-through; }
+.project-card-row { display:flex;justify-content:space-between;align-items:center;font-size:.8rem;margin-bottom:.6rem; }
+.project-card-price { font-family:'Syne',sans-serif;font-weight:700;color:var(--gold);font-size:.95rem; }
+.custom-bot-tag { font-size:.62rem;font-family:'Syne',sans-serif;letter-spacing:.08em;color:var(--text-dim);text-transform:uppercase; }
+.custom-bot-tag.yes { color:var(--gold); }
+.project-card-dates { display:flex;justify-content:space-between;font-size:.72rem;color:var(--text-dim);font-family:'Syne',sans-serif;letter-spacing:.03em;margin:.9rem 0; }
+.project-card-progress { display:flex;justify-content:space-between;align-items:center;padding-top:.9rem;border-top:1px solid var(--border);margin-top:.3rem; }
+.days-active { font-size:.72rem;color:var(--text-muted);font-family:'Syne',sans-serif; }
+.days-remaining { font-size:.72rem;font-family:'Syne',sans-serif;font-weight:600; }
+.days-remaining.overdue { color:var(--red); }
+.days-remaining.soon { color:var(--gold); }
+.days-remaining.ok { color:var(--text-muted); }
+.project-card-actions { display:flex;gap:.4rem;margin-top:1.1rem;flex-wrap:wrap; }
+.empty-state { grid-column:1/-1;text-align:center;padding:4rem 2rem;color:var(--text-dim);font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.2rem; }
+
+/* ── PROJECT DETAIL MODAL ───────────────────────────────────────── */
+.detail-grid { display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-bottom:2rem; }
+.detail-block-label { font-family:'Syne',sans-serif;font-size:.6rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--text-dim);margin-bottom:.4rem; }
+.detail-block-value { font-size:.9rem;color:var(--text); }
+.timeline { display:flex;align-items:center;gap:0;margin:2rem 0;flex-wrap:wrap; }
+.timeline-step { display:flex;flex-direction:column;align-items:center;gap:.5rem;flex:1;min-width:80px; }
+.timeline-dot { width:14px;height:14px;border-radius:50%;border:2px solid var(--border);background:var(--bg4); }
+.timeline-dot.active { border-color:var(--gold);background:var(--gold); }
+.timeline-dot.cancelled-dot { border-color:var(--red);background:var(--red); }
+.timeline-label { font-family:'Syne',sans-serif;font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim); }
+.timeline-label.active { color:var(--gold); }
+.timeline-line { flex:1;height:1px;background:var(--border);margin-bottom:1.6rem; }
+.timeline-line.active { background:var(--gold-dim); }
+.detail-stats-grid { display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);margin:1.5rem 0; }
+.detail-stat { background:var(--bg4);padding:1.1rem;text-align:center; }
+.detail-stat-label { font-size:.58rem;font-family:'Syne',sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:.4rem; }
+.detail-stat-value { font-family:'Cormorant Garamond',serif;font-size:1.5rem; }
+
+/* ── RESPONSIVE ──────────────────────────────────────────────────── */
+@media (max-width:1100px) {
+  .stats-grid { grid-template-columns:repeat(2,1fr); }
+  .detail-grid { grid-template-columns:1fr; }
+  .detail-stats-grid { grid-template-columns:repeat(2,1fr); }
+}
+@media (max-width:900px) {
+  .admin-nav { padding:1rem 1.25rem; }
+  .admin-nav-tag { display:none; }
+  .admin-wrap { padding:1.5rem 1.25rem; }
+  .stats-grid { grid-template-columns:1fr 1fr; }
+  .projects-grid { grid-template-columns:1fr; }
+  .chart-wrap { gap:.6rem; }
+  .modal-header, .modal-body { padding:1.5rem; }
+  .modal-box { width:100%;max-width:100%;margin:0;max-height:100vh; }
+  .modal-overlay { align-items:flex-end;padding:0; }
+  .toolbar-controls { width:100%; }
+  .search-input { min-width:0;flex:1; }
+}
+@media (max-width:520px) {
+  .stats-grid { grid-template-columns:1fr; }
+  .detail-stats-grid { grid-template-columns:1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     GATE — shown until we know the user is a logged-in admin
+═══════════════════════════════════════════════════════════════ -->
+<div id="gateScreen" class="gate-screen">
+  <div class="gate-icon">◈</div>
+  <div class="gate-text" id="gateText">Checking your session…</div>
+  <div id="gateAction"></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     DASHBOARD (hidden until admin access is confirmed)
+═══════════════════════════════════════════════════════════════ -->
+<div id="dashboardRoot" style="display:none;">
+
+  <nav class="admin-nav">
+    <div style="display:flex;align-items:center;">
+      <a href="index.html" class="admin-nav-logo">Digital Structure <span>Co.</span></a>
+      <span class="admin-nav-tag">Admin</span>
+    </div>
+    <div class="admin-nav-right">
+      <a href="#" class="admin-nav-link active" id="navTabProjects" onclick="switchTab('projects');return false;">Projects</a>
+      <a href="#" class="admin-nav-link" id="navTabPortfolio" onclick="switchTab('portfolio');return false;">Portfolio</a>
+      <a href="index.html" class="admin-nav-link">← Site</a>
+      <div class="admin-nav-user">
+        <img class="admin-nav-avatar" id="navAvatar" src="" alt="">
+        <span class="admin-nav-name" id="navName"></span>
+        <button class="admin-btn" onclick="adminLogout()">Sign Out</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ═══════════ PROJECTS TAB ═══════════ -->
+  <div id="tabProjects" class="admin-wrap">
+    <div class="admin-page-header">
+      <div>
+        <span class="section-eyebrow">Project Tracker</span>
+        <h1 class="admin-page-title">Business <em>Overview</em></h1>
+      </div>
+      <button class="btn-submit" onclick="openProjectForm()">+ New Project</button>
+    </div>
+
+    <!-- Primary stats -->
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-card-label">Total Projects</div><div class="stat-card-value" id="statTotal">—</div></div>
+      <div class="stat-card"><div class="stat-card-label">Pending</div><div class="stat-card-value" id="statPending">—</div></div>
+      <div class="stat-card"><div class="stat-card-label">In Progress</div><div class="stat-card-value gold" id="statInProgress">—</div></div>
+      <div class="stat-card"><div class="stat-card-label">Completed</div><div class="stat-card-value" id="statCompleted">—</div></div>
+    </div>
+    <div class="stats-grid stats-grid-secondary">
+      <div class="stat-card"><div class="stat-card-label">Total Revenue</div><div class="stat-card-value gold" id="statRevenue">—</div></div>
+      <div class="stat-card"><div class="stat-card-label">Active Projects</div><div class="stat-card-value" id="statActive">—</div></div>
+      <div class="stat-card"><div class="stat-card-label">Overdue</div><div class="stat-card-value red" id="statOverdue">—</div></div>
+      <div class="stat-card"><div class="stat-card-label">Avg. Completion</div><div class="stat-card-value" id="statAvgCompletion">—</div></div>
+    </div>
+
+    <!-- Analytics -->
+    <div class="analytics-section">
+      <div class="analytics-header">
+        <span class="analytics-title">Monthly Analytics</span>
+        <div class="metric-toggle">
+          <button class="admin-btn active" id="metricBtnProjects" onclick="setChartMetric('projects')">Projects</button>
+          <button class="admin-btn" id="metricBtnClients" onclick="setChartMetric('clients')">Clients</button>
+          <button class="admin-btn" id="metricBtnRevenue" onclick="setChartMetric('revenue')">Revenue</button>
+        </div>
+      </div>
+      <div class="chart-wrap" id="chartWrap"></div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="projects-toolbar">
+      <div class="filter-tabs" id="statusFilterTabs">
+        <button class="filter-tab active" data-filter="all" onclick="setStatusFilter('all')">All</button>
+        <button class="filter-tab" data-filter="Pending" onclick="setStatusFilter('Pending')">Pending</button>
+        <button class="filter-tab" data-filter="In Progress" onclick="setStatusFilter('In Progress')">In Progress</button>
+        <button class="filter-tab" data-filter="Review" onclick="setStatusFilter('Review')">Review</button>
+        <button class="filter-tab" data-filter="Completed" onclick="setStatusFilter('Completed')">Completed</button>
+        <button class="filter-tab" data-filter="Cancelled" onclick="setStatusFilter('Cancelled')">Cancelled</button>
+        <button class="filter-tab" data-filter="Overdue" onclick="setStatusFilter('Overdue')">Overdue</button>
+      </div>
+      <div class="toolbar-controls">
+        <input type="text" class="search-input" id="projectSearch" placeholder="Search projects…" oninput="renderProjects()">
+        <select class="sort-select" id="sortSelect" onchange="renderProjects()">
+          <option value="newest">Newest</option>
+          <option value="oldest">Oldest</option>
+          <option value="deadline">Deadline</option>
+          <option value="price">Price</option>
+          <option value="status">Status</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="projects-grid" id="projectsGrid">
+      <div class="empty-state">Loading projects…</div>
+    </div>
+  </div>
+
+  <!-- ═══════════ PORTFOLIO TAB ═══════════ -->
+  <div id="tabPortfolio" class="admin-wrap" style="display:none;">
+    <div class="admin-page-header">
+      <div>
+        <span class="section-eyebrow">Portfolio Management</span>
+        <h1 class="admin-page-title">Public <em>Showcase</em></h1>
+      </div>
+      <button class="btn-submit" onclick="openPortfolioForm()">+ Add Project</button>
+    </div>
+
+    <div class="projects-toolbar">
+      <div class="filter-tabs">
+        <button class="filter-tab active" data-pf="all" onclick="setPortfolioFilter('all')">All</button>
+        <button class="filter-tab" data-pf="published" onclick="setPortfolioFilter('published')">Published</button>
+        <button class="filter-tab" data-pf="draft" onclick="setPortfolioFilter('draft')">Draft</button>
+      </div>
+    </div>
+
+    <div class="projects-grid" id="portfolioGridAdmin">
+      <div class="empty-state">Loading portfolio…</div>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     PROJECT FORM MODAL (create / edit)
+═══════════════════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="projectFormOverlay" onclick="closeIfOutside(event,'projectFormOverlay')">
+  <div class="modal-box" style="max-width:640px;">
+    <div class="modal-header">
+      <div>
+        <span class="section-eyebrow">Project Tracker</span>
+        <h3 class="modal-title" id="projectFormTitle">New <em>Project</em></h3>
+      </div>
+      <button class="modal-close" onclick="closeModal('projectFormOverlay')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="pfEditId">
+      <div class="form-field">
+        <label>Server / Project Name <span class="field-required">*</span></label>
+        <input type="text" id="pfName" class="form-input" placeholder="Nova Gaming">
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;">
+        <div class="form-field">
+          <label>Project Type <span class="field-required">*</span></label>
+          <select id="pfType" class="form-select">
+            <option>Gaming</option>
+            <option>Community</option>
+            <option>Shop</option>
+            <option>Marketplace</option>
+            <option>Creator</option>
+            <option>Utility</option>
+            <option>Custom</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Custom Bot</label>
+          <select id="pfCustomBot" class="form-select">
+            <option value="false">No</option>
+            <option value="true">Yes</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;">
+        <div class="form-field">
+          <label>Price (USD)</label>
+          <input type="number" id="pfPrice" class="form-input" placeholder="75" step="0.01" min="0">
+        </div>
+        <div class="form-field">
+          <label>Status</label>
+          <select id="pfStatus" class="form-select">
+            <option>Pending</option>
+            <option>In Progress</option>
+            <option>Review</option>
+            <option>Completed</option>
+            <option>Cancelled</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;">
+        <div class="form-field">
+          <label>Start Date</label>
+          <input type="date" id="pfStartDate" class="form-input">
+        </div>
+        <div class="form-field">
+          <label>Deadline</label>
+          <input type="date" id="pfDeadline" class="form-input">
+        </div>
+      </div>
+      <div class="form-field">
+        <label>Client Name <span style="color:var(--text-dim);font-size:.72rem;">(optional)</span></label>
+        <input type="text" id="pfClient" class="form-input" placeholder="Discord username or client name">
+      </div>
+      <div class="form-field">
+        <label>Description <span style="color:var(--text-dim);font-size:.72rem;">(optional)</span></label>
+        <textarea id="pfDescription" class="form-textarea" style="min-height:70px;" placeholder="What this project involves…"></textarea>
+      </div>
+      <div class="form-field">
+        <label>Private Notes <span style="color:var(--text-dim);font-size:.72rem;">(admin only — never shown publicly)</span></label>
+        <textarea id="pfNotes" class="form-textarea" style="min-height:70px;" placeholder="Internal notes, payment status, reminders…"></textarea>
+      </div>
+      <div style="display:flex;gap:1rem;align-items:center;flex-wrap:wrap;margin-top:.5rem;">
+        <button class="btn-submit" onclick="saveProject()">Save Project</button>
+        <button class="admin-btn" onclick="closeModal('projectFormOverlay')" style="padding:.6rem 1.2rem;">Cancel</button>
+        <span class="form-msg" id="pfMsg"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     PROJECT DETAIL MODAL
+═══════════════════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="projectDetailOverlay" onclick="closeIfOutside(event,'projectDetailOverlay')">
+  <div class="modal-box" style="max-width:720px;">
+    <div class="modal-header">
+      <div>
+        <span class="section-eyebrow" id="pdType">—</span>
+        <h3 class="modal-title" id="pdName">—</h3>
+      </div>
+      <button class="modal-close" onclick="closeModal('projectDetailOverlay')">✕</button>
+    </div>
+    <div class="modal-body" id="pdBody"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     PORTFOLIO FORM MODAL (create / edit)
+═══════════════════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="portfolioFormOverlay" onclick="closeIfOutside(event,'portfolioFormOverlay')">
+  <div class="modal-box" style="max-width:700px;">
+    <div class="modal-header">
+      <div>
+        <span class="section-eyebrow">Portfolio</span>
+        <h3 class="modal-title" id="portfolioFormTitle">Add <em>Project</em></h3>
+      </div>
+      <button class="modal-close" onclick="closeModal('portfolioFormOverlay')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="pfoEditId">
+      <div class="form-field">
+        <label>Project Name <span class="field-required">*</span></label>
+        <input type="text" id="pfoTitle" class="form-input" placeholder="Gaming Community Server">
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;">
+        <div class="form-field">
+          <label>Category</label>
+          <select id="pfoCategory" class="form-select" onchange="toggleCustomCategory()">
+            <option>Gaming</option>
+            <option>Community</option>
+            <option>Shop</option>
+            <option>Marketplace</option>
+            <option>Creator</option>
+            <option>Utility</option>
+            <option>Custom</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Published</label>
+          <select id="pfoPublished" class="form-select">
+            <option value="true">Published</option>
+            <option value="false">Draft</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-field">
+        <label>Short Description <span class="field-required">*</span></label>
+        <textarea id="pfoDesc" class="form-textarea" style="min-height:70px;" placeholder="Built a modern gaming community with organized channels…"></textarea>
+      </div>
+      <div class="form-field">
+        <label>Features <span style="color:var(--text-dim);font-size:.72rem;">(one per line)</span></label>
+        <textarea id="pfoFeatures" class="form-textarea" style="min-height:70px;" placeholder="Ticket System&#10;Verification&#10;Role Hierarchy"></textarea>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;">
+        <div class="form-field">
+          <label>Completion Date</label>
+          <input type="month" id="pfoDate" class="form-input">
+        </div>
+        <div class="form-field">
+          <label>Price <span style="color:var(--text-dim);font-size:.72rem;">(optional)</span></label>
+          <input type="number" id="pfoPrice" class="form-input" placeholder="75" step="0.01" min="0">
+        </div>
+      </div>
+      <div class="form-field">
+        <label>Client Name <span style="color:var(--text-dim);font-size:.72rem;">(optional)</span></label>
+        <input type="text" id="pfoClient" class="form-input" placeholder="Optional — only if the client is OK being named">
+      </div>
+      <div class="form-field">
+        <label>Cover Image <span class="field-required">*</span></label>
+        <input type="file" id="pfoCoverFile" class="form-input" accept="image/*" onchange="previewCoverFile()">
+        <p style="font-size:.72rem;color:var(--text-dim);margin-top:.5rem;">Uploads to secure storage. Or paste a direct image URL instead:</p>
+        <input type="url" id="pfoCoverUrl" class="form-input" placeholder="https://…" style="margin-top:.5rem;">
+        <img id="pfoCoverPreview" style="display:none;max-width:200px;margin-top:.75rem;border:1px solid var(--border);">
+      </div>
+      <div class="form-field">
+        <label>Screenshot URLs <span style="color:var(--text-dim);font-size:.72rem;">(one per line, optional)</span></label>
+        <textarea id="pfoScreenshots" class="form-textarea" style="min-height:70px;" placeholder="https://…"></textarea>
+      </div>
+      <div style="display:flex;gap:1rem;align-items:center;flex-wrap:wrap;margin-top:.5rem;">
+        <button class="btn-submit" onclick="savePortfolioAdminEntry()">Save Entry</button>
+        <button class="admin-btn" onclick="closeModal('portfolioFormOverlay')" style="padding:.6rem 1.2rem;">Cancel</button>
+        <span class="form-msg" id="pfoMsg"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════
+// SUPABASE CONFIG — same project as index.html (anon public key only;
+// all write/read authorization is enforced server-side via RLS, never
+// trusted from this client code alone)
+// ═══════════════════════════════════════════════════════════════════
+const SUPABASE_URL = 'https://davnezybsrqssmjmpcbe.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRhdm5lenlic3Jxc3Ntam1wY2JlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ5OTk1MjUsImV4cCI6MjEwMDU3NTUyNX0.MAd6N9pat4oO61cYSVel7xgP3bRmlZdGqKWg27z_lYA';
+
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  auth: { redirectTo: window.location.origin + window.location.pathname }
+});
+
+let currentUser = null, currentProfile = null;
+let allProjects = [];
+let allPortfolioAdmin = [];
+let statusFilter = 'all';
+let portfolioFilter = 'all';
+let chartMetric = 'projects';
+
+// ── TOAST ──────────────────────────────────────────────────────────
+function showToast(msg, type='gold') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + type;
+  clearTimeout(window._toastTimer);
+  window._toastTimer = setTimeout(() => t.classList.remove('show'), 3200);
+}
+
+// ── MODAL HELPERS ─────────────────────────────────────────────────
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+  document.body.style.overflow = '';
+}
+function closeIfOutside(e, id) {
+  if (e.target === document.getElementById(id)) closeModal(id);
+}
+
+// ── AUTH GATE ──────────────────────────────────────────────────────
+async function initAuthGate() {
+  const { data: { session } } = await sb.auth.getSession();
+
+  if (!session) {
+    showLoginGate();
+    return;
+  }
+
+  currentUser = session.user;
+  currentProfile = await getOrCreateProfile(currentUser.id);
+
+  if (!currentProfile || !currentProfile.is_admin) {
+    showDeniedGate();
+    return;
+  }
+
+  showDashboard();
+}
+
+function showLoginGate() {
+  document.getElementById('gateText').textContent =
+    'This dashboard is restricted to the site owner. Sign in with the admin Discord account to continue.';
+  document.getElementById('gateAction').innerHTML =
+    `<button class="gate-btn" onclick="loginWithDiscord()">Sign In with Discord</button>`;
+}
+
+function showDeniedGate() {
+  document.getElementById('gateText').textContent =
+    "You're signed in, but this account doesn't have admin access. If this is a mistake, contact the site owner.";
+  document.getElementById('gateAction').innerHTML =
+    `<button class="admin-btn" onclick="adminLogout()">Sign Out</button>`;
+}
+
+async function loginWithDiscord() {
+  const { error } = await sb.auth.signInWithOAuth({
+    provider: 'discord',
+    options: { redirectTo: window.location.origin + window.location.pathname }
+  });
+  if (error) showToast('Login failed. Please try again.', 'err');
+}
+
+async function adminLogout() {
+  await sb.auth.signOut();
+  window.location.href = 'index.html';
+}
+
+async function getOrCreateProfile(userId) {
+  const { data: existing } = await sb.from('profiles').select('*').eq('id', userId).maybeSingle();
+  if (existing) return existing;
+
+  const { data: { user } } = await sb.auth.getUser();
+  if (!user) return null;
+  const metadata = user.user_metadata || {};
+
+  const newProfile = {
+    id: user.id,
+    username: metadata.preferred_username || metadata.user_name || metadata.name || user.email,
+    display_name: metadata.full_name || metadata.name || metadata.preferred_username || metadata.user_name,
+    avatar_url: metadata.avatar_url || '',
+    discord_id: metadata.provider_id || metadata.sub || null,
+    is_admin: false
+  };
+  const { data } = await sb.from('profiles').insert(newProfile).select().single();
+  return data;
+}
+
+function showDashboard() {
+  document.getElementById('gateScreen').style.display = 'none';
+  document.getElementById('dashboardRoot').style.display = 'block';
+  document.getElementById('navAvatar').src = currentProfile.avatar_url ||
+    `https://ui-avatars.com/api/?name=${encodeURIComponent(currentProfile.display_name||'Admin')}&background=1e1e1e&color=c9a84c`;
+  document.getElementById('navName').textContent = currentProfile.display_name || currentProfile.username || 'Admin';
+
+  loadProjects();
+  loadPortfolioAdmin();
+}
+
+function switchTab(tab) {
+  document.getElementById('tabProjects').style.display = tab === 'projects' ? '' : 'none';
+  document.getElementById('tabPortfolio').style.display = tab === 'portfolio' ? '' : 'none';
+  document.getElementById('navTabProjects').classList.toggle('active', tab === 'projects');
+  document.getElementById('navTabPortfolio').classList.toggle('active', tab === 'portfolio');
+}
+
+initAuthGate();
+
+// ═══════════════════════════════════════════════════════════════════
+// DATE MATH — everything here is computed live from stored dates.
+// Nothing about "days active" / "days remaining" / "overdue" /
+// "completion time" is ever written to the database or hardcoded.
+// ═══════════════════════════════════════════════════════════════════
+const DAY_MS = 86400000;
+
+function todayLocalMidnight() {
+  const d = new Date();
+  d.setHours(0,0,0,0);
+  return d;
+}
+function parseDateOnly(str) {
+  if (!str) return null;
+  // 'YYYY-MM-DD' -> local midnight, avoids UTC off-by-one issues
+  const [y,m,d] = str.split('-').map(Number);
+  return new Date(y, m-1, d);
+}
+function daysBetween(a, b) {
+  return Math.round((b - a) / DAY_MS);
+}
+function daysActive(project) {
+  const start = parseDateOnly(project.start_date);
+  if (!start) return 0;
+  const end = project.completed_at ? parseDateOnly(project.completed_at) : todayLocalMidnight();
+  return Math.max(0, daysBetween(start, end));
+}
+function daysRemaining(project) {
+  if (!project.deadline) return null;
+  const deadline = parseDateOnly(project.deadline);
+  return daysBetween(todayLocalMidnight(), deadline); // negative = overdue
+}
+function isOverdue(project) {
+  if (project.status === 'Completed' || project.status === 'Cancelled') return false;
+  const rem = daysRemaining(project);
+  return rem !== null && rem < 0;
+}
+function completionDays(project) {
+  if (!project.completed_at) return null;
+  const start = parseDateOnly(project.start_date);
+  const end = parseDateOnly(project.completed_at);
+  if (!start || !end) return null;
+  return Math.max(0, daysBetween(start, end));
+}
+function fmtDate(str) {
+  if (!str) return '—';
+  return parseDateOnly(str).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+}
+function fmtMoney(n) {
+  return '$' + (Number(n)||0).toLocaleString('en-US', { minimumFractionDigits:0, maximumFractionDigits:2 });
+}
+function statusClass(status) {
+  return status.toLowerCase().replace(' ', '-');
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// PROJECTS — load, stats, chart, list
+// ═══════════════════════════════════════════════════════════════════
+async function loadProjects() {
+  const { data, error } = await sb.from('projects').select('*').order('created_at', { ascending:false });
+  if (error) {
+    document.getElementById('projectsGrid').innerHTML = '<div class="empty-state">Couldn\'t load projects.</div>';
+    console.error(error);
+    return;
+  }
+  allProjects = data || [];
+  renderStatCards();
+  renderChart();
+  renderProjects();
+}
+
+function renderStatCards() {
+  const total = allProjects.length;
+  const byStatus = s => allProjects.filter(p => p.status === s).length;
+  const active = allProjects.filter(p => p.status === 'Pending' || p.status === 'In Progress' || p.status === 'Review').length;
+  const overdue = allProjects.filter(isOverdue).length;
+  const revenue = allProjects
+    .filter(p => p.status === 'Completed')
+    .reduce((s,p) => s + (Number(p.price)||0), 0);
+
+  const completedWithTime = allProjects.filter(p => p.status === 'Completed' && completionDays(p) !== null);
+  const avgCompletion = completedWithTime.length
+    ? Math.round(completedWithTime.reduce((s,p) => s + completionDays(p), 0) / completedWithTime.length)
+    : null;
+
+  document.getElementById('statTotal').textContent = total;
+  document.getElementById('statPending').textContent = byStatus('Pending');
+  document.getElementById('statInProgress').textContent = byStatus('In Progress');
+  document.getElementById('statCompleted').textContent = byStatus('Completed');
+  document.getElementById('statRevenue').textContent = fmtMoney(revenue);
+  document.getElementById('statActive').textContent = active;
+  document.getElementById('statOverdue').textContent = overdue;
+  document.getElementById('statAvgCompletion').textContent = avgCompletion === null ? '—' : avgCompletion + ' d';
+}
+
+function setChartMetric(metric) {
+  chartMetric = metric;
+  ['projects','clients','revenue'].forEach(m =>
+    document.getElementById('metricBtn' + m[0].toUpperCase()+m.slice(1)).classList.toggle('active', m === metric));
+  renderChart();
+}
+
+function renderChart() {
+  const wrap = document.getElementById('chartWrap');
+  if (!allProjects.length) {
+    wrap.innerHTML = '<div class="chart-empty">No project data yet — add a project to see monthly analytics.</div>';
+    return;
+  }
+
+  // Build last 6 months buckets (oldest -> newest), keyed by YYYY-M
+  const months = [];
+  const now = new Date();
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    months.push({ key: `${d.getFullYear()}-${d.getMonth()}`, label: d.toLocaleDateString('en-US',{month:'short'}), value: 0 });
+  }
+  const bucketOf = (dateStr) => {
+    const d = parseDateOnly(dateStr);
+    if (!d) return null;
+    return `${d.getFullYear()}-${d.getMonth()}`;
+  };
+
+  allProjects.forEach(p => {
+    const key = bucketOf(p.start_date);
+    const bucket = months.find(m => m.key === key);
+    if (!bucket) return;
+    if (chartMetric === 'projects') bucket.value += 1;
+    else if (chartMetric === 'clients') bucket.value += 1; // one project = one client engagement
+    else if (chartMetric === 'revenue' && p.status === 'Completed') bucket.value += Number(p.price)||0;
+  });
+
+  const max = Math.max(1, ...months.map(m => m.value));
+  wrap.innerHTML = months.map(m => {
+    const heightPct = Math.max(2, (m.value / max) * 100);
+    const displayVal = chartMetric === 'revenue' ? fmtMoney(m.value) : m.value;
+    return `<div class="chart-bar-col">
+      <div class="chart-bar" style="height:${heightPct}%;">
+        <span class="chart-bar-value">${displayVal}</span>
+      </div>
+      <span class="chart-bar-label">${m.label}</span>
+    </div>`;
+  }).join('');
+}
+
+function setStatusFilter(f) {
+  statusFilter = f;
+  document.querySelectorAll('#statusFilterTabs .filter-tab').forEach(t =>
+    t.classList.toggle('active', t.dataset.filter === f));
+  renderProjects();
+}
+
+function renderProjects() {
+  const grid = document.getElementById('projectsGrid');
+  const q = (document.getElementById('projectSearch').value || '').toLowerCase().trim();
+  const sortBy = document.getElementById('sortSelect').value;
+
+  let list = allProjects.slice();
+
+  if (statusFilter === 'Overdue') {
+    list = list.filter(isOverdue);
+  } else if (statusFilter !== 'all') {
+    list = list.filter(p => p.status === statusFilter);
+  }
+
+  if (q) {
+    list = list.filter(p =>
+      (p.project_name||'').toLowerCase().includes(q) ||
+      (p.client_name||'').toLowerCase().includes(q) ||
+      (p.project_type||'').toLowerCase().includes(q));
+  }
+
+  list.sort((a,b) => {
+    switch (sortBy) {
+      case 'oldest': return new Date(a.created_at) - new Date(b.created_at);
+      case 'deadline': {
+        if (!a.deadline) return 1;
+        if (!b.deadline) return -1;
+        return parseDateOnly(a.deadline) - parseDateOnly(b.deadline);
+      }
+      case 'price': return (Number(b.price)||0) - (Number(a.price)||0);
+      case 'status': return a.status.localeCompare(b.status);
+      default: return new Date(b.created_at) - new Date(a.created_at); // newest
+    }
+  });
+
+  if (!list.length) {
+    grid.innerHTML = '<div class="empty-state">No projects match this view.</div>';
+    return;
+  }
+
+  grid.innerHTML = list.map(p => {
+    const overdue = isOverdue(p);
+    const rem = daysRemaining(p);
+    let remLabel, remClass;
+    if (p.status === 'Completed') {
+      remLabel = `Done in ${completionDays(p)} d`;
+      remClass = 'ok';
+    } else if (p.status === 'Cancelled') {
+      remLabel = 'Cancelled';
+      remClass = 'ok';
+    } else if (rem === null) {
+      remLabel = 'No deadline';
+      remClass = 'ok';
+    } else if (rem < 0) {
+      remLabel = `Overdue ${Math.abs(rem)} d`;
+      remClass = 'overdue';
+    } else if (rem <= 2) {
+      remLabel = `${rem} d left`;
+      remClass = 'soon';
+    } else {
+      remLabel = `${rem} d left`;
+      remClass = 'ok';
+    }
+
+    return `<div class="project-card${overdue?' overdue':''}" onclick="openProjectDetail('${p.id}')">
+      <div class="project-card-top">
+        <div class="project-card-name">${escapeHtml(p.project_name)}</div>
+        <span class="status-pill ${statusClass(p.status)}">${p.status}</span>
+      </div>
+      <div class="project-card-type">${escapeHtml(p.project_type)}</div>
+      <div class="project-card-row">
+        <span class="project-card-price">${fmtMoney(p.price)}</span>
+        <span class="custom-bot-tag ${p.custom_bot?'yes':''}">Custom Bot: ${p.custom_bot?'Yes':'No'}</span>
+      </div>
+      <div class="project-card-dates">
+        <span>Started ${fmtDate(p.start_date)}</span>
+        <span>${p.deadline ? 'Due ' + fmtDate(p.deadline) : 'No deadline'}</span>
+      </div>
+      <div class="project-card-progress">
+        <span class="days-active">${daysActive(p)} days active</span>
+        <span class="days-remaining ${remClass}">${remLabel}</span>
+      </div>
+      <div class="project-card-actions" onclick="event.stopPropagation()">
+        <button class="admin-btn accent" onclick="openProjectForm('${p.id}')">Edit</button>
+        ${p.status !== 'Completed' ? `<button class="admin-btn success" onclick="quickComplete('${p.id}')">Mark Done</button>` : ''}
+        <button class="admin-btn danger" onclick="deleteProject('${p.id}')">Delete</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function escapeHtml(s) {
+  const d = document.createElement('div');
+  d.textContent = s == null ? '' : String(s);
+  return d.innerHTML;
+}
+
+// ── PROJECT FORM (create/edit) ────────────────────────────────────
+function openProjectForm(id) {
+  const editId = document.getElementById('pfEditId');
+  const msg = document.getElementById('pfMsg');
+  msg.textContent = ''; msg.className = 'form-msg';
+
+  if (id) {
+    const p = allProjects.find(x => x.id === id);
+    if (!p) return;
+    document.getElementById('projectFormTitle').innerHTML = 'Edit <em>Project</em>';
+    editId.value = p.id;
+    document.getElementById('pfName').value = p.project_name || '';
+    document.getElementById('pfType').value = p.project_type || 'Custom';
+    document.getElementById('pfCustomBot').value = p.custom_bot ? 'true' : 'false';
+    document.getElementById('pfPrice').value = p.price ?? '';
+    document.getElementById('pfStatus').value = p.status || 'Pending';
+    document.getElementById('pfStartDate').value = p.start_date || '';
+    document.getElementById('pfDeadline').value = p.deadline || '';
+    document.getElementById('pfClient').value = p.client_name || '';
+    document.getElementById('pfDescription').value = p.description || '';
+    document.getElementById('pfNotes').value = p.notes || '';
+  } else {
+    document.getElementById('projectFormTitle').innerHTML = 'New <em>Project</em>';
+    editId.value = '';
+    document.getElementById('pfName').value = '';
+    document.getElementById('pfType').value = 'Custom';
+    document.getElementById('pfCustomBot').value = 'false';
+    document.getElementById('pfPrice').value = '';
+    document.getElementById('pfStatus').value = 'Pending';
+    document.getElementById('pfStartDate').value = new Date().toISOString().slice(0,10);
+    document.getElementById('pfDeadline').value = '';
+    document.getElementById('pfClient').value = '';
+    document.getElementById('pfDescription').value = '';
+    document.getElementById('pfNotes').value = '';
+  }
+
+  document.getElementById('projectFormOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+async function saveProject() {
+  const editId = document.getElementById('pfEditId').value.trim();
+  const name = document.getElementById('pfName').value.trim();
+  const msg = document.getElementById('pfMsg');
+
+  if (!name) { msg.textContent = 'Project name is required.'; msg.className = 'form-msg error'; return; }
+
+  const payload = {
+    project_name: name,
+    project_type: document.getElementById('pfType').value,
+    custom_bot: document.getElementById('pfCustomBot').value === 'true',
+    price: parseFloat(document.getElementById('pfPrice').value) || 0,
+    status: document.getElementById('pfStatus').value,
+    start_date: document.getElementById('pfStartDate').value || new Date().toISOString().slice(0,10),
+    deadline: document.getElementById('pfDeadline').value || null,
+    client_name: document.getElementById('pfClient').value.trim() || null,
+    description: document.getElementById('pfDescription').value.trim() || null,
+    notes: document.getElementById('pfNotes').value.trim() || null,
+  };
+
+  msg.textContent = 'Saving…'; msg.className = 'form-msg';
+
+  const result = editId
+    ? await sb.from('projects').update(payload).eq('id', editId)
+    : await sb.from('projects').insert(payload);
+
+  if (result.error) {
+    msg.textContent = 'Save failed: ' + result.error.message;
+    msg.className = 'form-msg error';
+    return;
+  }
+
+  showToast(editId ? 'Project updated.' : 'Project created.');
+  closeModal('projectFormOverlay');
+  await loadProjects();
+}
+
+async function quickComplete(id) {
+  const { error } = await sb.from('projects').update({ status: 'Completed' }).eq('id', id);
+  if (error) { showToast('Update failed.', 'err'); return; }
+  showToast('Marked as completed.');
+  await loadProjects();
+}
+
+async function deleteProject(id) {
+  if (!confirm('Delete this project? This cannot be undone.')) return;
+  const { error } = await sb.from('projects').delete().eq('id', id);
+  if (error) { showToast('Delete failed.', 'err'); return; }
+  showToast('Project deleted.', 'err');
+  await loadProjects();
+}
+
+// ── PROJECT DETAIL MODAL ──────────────────────────────────────────
+function openProjectDetail(id) {
+  const p = allProjects.find(x => x.id === id);
+  if (!p) return;
+
+  document.getElementById('pdType').textContent = p.project_type;
+  document.getElementById('pdName').textContent = p.project_name;
+
+  const steps = ['Pending','In Progress','Review','Completed'];
+  const currentIdx = p.status === 'Cancelled' ? -1 : steps.indexOf(p.status);
+
+  const timelineHtml = p.status === 'Cancelled'
+    ? `<div class="timeline"><div class="timeline-step"><div class="timeline-dot cancelled-dot"></div><span class="timeline-label" style="color:var(--red);">Cancelled</span></div></div>`
+    : `<div class="timeline">${steps.map((s,i) => `
+        <div class="timeline-step">
+          <div class="timeline-dot${i<=currentIdx?' active':''}"></div>
+          <span class="timeline-label${i<=currentIdx?' active':''}">${s}</span>
+        </div>
+        ${i<steps.length-1?`<div class="timeline-line${i<currentIdx?' active':''}"></div>`:''}
+      `).join('')}</div>`;
+
+  const rem = daysRemaining(p);
+  const overdue = isOverdue(p);
+  const compDays = completionDays(p);
+
+  const canAddToPortfolio = p.status === 'Completed' && !p.portfolio_id;
+
+  document.getElementById('pdBody').innerHTML = `
+    <div class="detail-grid">
+      <div>
+        <div class="detail-block-label">Price</div>
+        <div class="detail-block-value">${fmtMoney(p.price)}</div>
+      </div>
+      <div>
+        <div class="detail-block-label">Custom Bot</div>
+        <div class="detail-block-value">${p.custom_bot ? 'Yes' : 'No'}</div>
+      </div>
+      <div>
+        <div class="detail-block-label">Status</div>
+        <div class="detail-block-value"><span class="status-pill ${statusClass(p.status)}">${p.status}</span></div>
+      </div>
+      <div>
+        <div class="detail-block-label">Client</div>
+        <div class="detail-block-value">${escapeHtml(p.client_name || '—')}</div>
+      </div>
+    </div>
+
+    ${timelineHtml}
+
+    <div class="detail-stats-grid">
+      <div class="detail-stat"><div class="detail-stat-label">Days Active</div><div class="detail-stat-value">${daysActive(p)}</div></div>
+      <div class="detail-stat"><div class="detail-stat-label">Days Remaining</div><div class="detail-stat-value" style="${overdue?'color:var(--red)':''}">${rem === null ? '—' : (overdue ? 'Overdue' : rem)}</div></div>
+      <div class="detail-stat"><div class="detail-stat-label">Overdue By</div><div class="detail-stat-value" style="${overdue?'color:var(--red)':''}">${overdue ? Math.abs(rem)+' d' : '—'}</div></div>
+      <div class="detail-stat"><div class="detail-stat-label">Completion Time</div><div class="detail-stat-value">${compDays === null ? '—' : compDays + ' d'}</div></div>
+    </div>
+
+    <div class="detail-block-label">Started</div>
+    <div class="detail-block-value" style="margin-bottom:1rem;">${fmtDate(p.start_date)}</div>
+    <div class="detail-block-label">Deadline</div>
+    <div class="detail-block-value" style="margin-bottom:1rem;">${p.deadline ? fmtDate(p.deadline) : '—'}</div>
+    ${p.completed_at ? `<div class="detail-block-label">Completion Date</div><div class="detail-block-value" style="margin-bottom:1rem;">${fmtDate(p.completed_at)}</div>` : ''}
+
+    ${p.description ? `<div class="detail-block-label">Description</div><div class="detail-block-value" style="margin-bottom:1rem;line-height:1.6;">${escapeHtml(p.description)}</div>` : ''}
+
+    <div class="detail-block-label">Private Notes <span style="color:var(--text-dim);font-weight:400;text-transform:none;letter-spacing:0;">(admin only)</span></div>
+    <div class="detail-block-value" style="margin-bottom:1.5rem;line-height:1.6;white-space:pre-wrap;">${p.notes ? escapeHtml(p.notes) : '—'}</div>
+
+    <div style="display:flex;gap:.75rem;flex-wrap:wrap;">
+      <button class="admin-btn accent" onclick="closeModal('projectDetailOverlay');openProjectForm('${p.id}')">Edit Project</button>
+      ${canAddToPortfolio ? `<button class="admin-btn success" onclick="closeModal('projectDetailOverlay');openPortfolioForm(null,'${p.id}')">Add to Portfolio</button>` : ''}
+      ${p.portfolio_id ? `<span style="font-size:.75rem;color:var(--green);font-family:'Syne',sans-serif;align-self:center;">✓ In Portfolio</span>` : ''}
+    </div>
+  `;
+
+  document.getElementById('projectDetailOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// PORTFOLIO ADMIN — this reads/writes the same `portfolio` table the
+// public site's #portfolio section reads from. Publishing here is
+// what makes an entry visible to visitors (RLS enforces published=true
+// for non-admins at the database level, not just in this UI).
+// ═══════════════════════════════════════════════════════════════════
+async function loadPortfolioAdmin() {
+  const { data, error } = await sb.from('portfolio').select('*').order('created_at', { ascending:false });
+  if (error) {
+    document.getElementById('portfolioGridAdmin').innerHTML = '<div class="empty-state">Couldn\'t load portfolio.</div>';
+    console.error(error);
+    return;
+  }
+  allPortfolioAdmin = data || [];
+  renderPortfolioAdmin();
+}
+
+function setPortfolioFilter(f) {
+  portfolioFilter = f;
+  document.querySelectorAll('[data-pf]').forEach(t => t.classList.toggle('active', t.dataset.pf === f));
+  renderPortfolioAdmin();
+}
+
+function renderPortfolioAdmin() {
+  const grid = document.getElementById('portfolioGridAdmin');
+  let list = allPortfolioAdmin.slice();
+  if (portfolioFilter === 'published') list = list.filter(e => e.published);
+  if (portfolioFilter === 'draft') list = list.filter(e => !e.published);
+
+  if (!list.length) {
+    grid.innerHTML = '<div class="empty-state">No portfolio entries in this view.</div>';
+    return;
+  }
+
+  grid.innerHTML = list.map(e => `
+    <div class="project-card">
+      <div class="project-card-top">
+        <div class="project-card-name">${escapeHtml(e.title)}</div>
+        <span class="status-pill ${e.published ? 'completed' : 'pending'}">${e.published ? 'Published' : 'Draft'}</span>
+      </div>
+      <div class="project-card-type">${escapeHtml(e.category || 'Other')}</div>
+      ${e.cover_url ? `<img src="${escapeHtml(e.cover_url)}" style="width:100%;aspect-ratio:16/9;object-fit:cover;margin:.75rem 0;border:1px solid var(--border);" loading="lazy">` : ''}
+      <div class="project-card-row" style="margin-top:.5rem;">
+        <span class="project-card-price">${e.price ? fmtMoney(e.price) : ''}</span>
+        <span class="custom-bot-tag">${escapeHtml(e.client_name || '')}</span>
+      </div>
+      <div class="project-card-actions">
+        <button class="admin-btn accent" onclick="openPortfolioForm('${e.id}')">Edit</button>
+        <button class="admin-btn" onclick="togglePortfolioPublish('${e.id}', ${e.published})">${e.published ? 'Unpublish' : 'Publish'}</button>
+        <button class="admin-btn danger" onclick="deletePortfolioAdminEntry('${e.id}')">Delete</button>
+      </div>
+    </div>`).join('');
+}
+
+async function togglePortfolioPublish(id, currentlyPublished) {
+  const { error } = await sb.from('portfolio').update({ published: !currentlyPublished }).eq('id', id);
+  if (error) { showToast('Update failed.', 'err'); return; }
+  showToast(currentlyPublished ? 'Unpublished.' : 'Published.');
+  await loadPortfolioAdmin();
+}
+
+async function deletePortfolioAdminEntry(id) {
+  if (!confirm('Delete this portfolio entry? This cannot be undone.')) return;
+  const { error } = await sb.from('portfolio').delete().eq('id', id);
+  if (error) { showToast('Delete failed.', 'err'); return; }
+  showToast('Portfolio entry deleted.', 'err');
+  await loadPortfolioAdmin();
+}
+
+// ── PORTFOLIO FORM (create/edit, optionally pre-filled from a
+//    completed project via "Add to Portfolio") ─────────────────────
+let pendingLinkedProjectId = null;
+
+function openPortfolioForm(id, linkedProjectId) {
+  const msg = document.getElementById('pfoMsg');
+  msg.textContent = ''; msg.className = 'form-msg';
+  pendingLinkedProjectId = linkedProjectId || null;
+
+  document.getElementById('pfoCoverPreview').style.display = 'none';
+  document.getElementById('pfoCoverFile').value = '';
+
+  if (id) {
+    const e = allPortfolioAdmin.find(x => x.id === id);
+    if (!e) return;
+    document.getElementById('portfolioFormTitle').innerHTML = 'Edit <em>Project</em>';
+    document.getElementById('pfoEditId').value = e.id;
+    document.getElementById('pfoTitle').value = e.title || '';
+    document.getElementById('pfoCategory').value = e.category || 'Other';
+    document.getElementById('pfoPublished').value = e.published ? 'true' : 'false';
+    document.getElementById('pfoDesc').value = e.description || '';
+    document.getElementById('pfoFeatures').value = (e.features || []).join('\n');
+    document.getElementById('pfoDate').value = e.completion_date || '';
+    document.getElementById('pfoPrice').value = e.price ?? '';
+    document.getElementById('pfoClient').value = e.client_name || '';
+    document.getElementById('pfoCoverUrl').value = e.cover_url || '';
+    document.getElementById('pfoScreenshots').value = (e.screenshots || []).join('\n');
+  } else {
+    document.getElementById('portfolioFormTitle').innerHTML = 'Add <em>Project</em>';
+    document.getElementById('pfoEditId').value = '';
+    document.getElementById('pfoPublished').value = linkedProjectId ? 'false' : 'true';
+    document.getElementById('pfoCoverUrl').value = '';
+    document.getElementById('pfoScreenshots').value = '';
+
+    if (linkedProjectId) {
+      // Pre-fill only the fields explicitly safe to make public.
+      // Private notes and internal-only project data are never copied.
+      const p = allProjects.find(x => x.id === linkedProjectId);
+      if (p) {
+        document.getElementById('pfoTitle').value = p.project_name || '';
+        document.getElementById('pfoCategory').value = p.project_type || 'Other';
+        document.getElementById('pfoDesc').value = p.description || '';
+        document.getElementById('pfoFeatures').value = p.custom_bot ? 'Custom Bot' : '';
+        document.getElementById('pfoDate').value = p.completed_at ? p.completed_at.slice(0,7) : '';
+        document.getElementById('pfoPrice').value = p.price ?? '';
+        document.getElementById('pfoClient').value = ''; // client name left blank — admin opts in explicitly
+      }
+    } else {
+      document.getElementById('pfoTitle').value = '';
+      document.getElementById('pfoCategory').value = 'Other';
+      document.getElementById('pfoDesc').value = '';
+      document.getElementById('pfoFeatures').value = '';
+      document.getElementById('pfoDate').value = '';
+      document.getElementById('pfoPrice').value = '';
+      document.getElementById('pfoClient').value = '';
+    }
+  }
+
+  document.getElementById('portfolioFormOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function previewCoverFile() {
+  const file = document.getElementById('pfoCoverFile').files[0];
+  const preview = document.getElementById('pfoCoverPreview');
+  if (!file) { preview.style.display = 'none'; return; }
+  preview.src = URL.createObjectURL(file);
+  preview.style.display = 'block';
+}
+
+async function uploadCoverImage(file) {
+  const ext = file.name.split('.').pop();
+  const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+  const { error: upErr } = await sb.storage.from('portfolio-images').upload(path, file);
+  if (upErr) throw upErr;
+  const { data } = sb.storage.from('portfolio-images').getPublicUrl(path);
+  return data.publicUrl;
+}
+
+async function savePortfolioAdminEntry() {
+  const editId = document.getElementById('pfoEditId').value.trim();
+  const title = document.getElementById('pfoTitle').value.trim();
+  const desc = document.getElementById('pfoDesc').value.trim();
+  const msg = document.getElementById('pfoMsg');
+  const file = document.getElementById('pfoCoverFile').files[0];
+  let coverUrl = document.getElementById('pfoCoverUrl').value.trim();
+
+  if (!title) { msg.textContent = 'Title is required.'; msg.className = 'form-msg error'; return; }
+  if (!desc) { msg.textContent = 'Description is required.'; msg.className = 'form-msg error'; return; }
+  if (!file && !coverUrl) { msg.textContent = 'Add a cover image (upload or URL).'; msg.className = 'form-msg error'; return; }
+
+  msg.textContent = 'Saving…'; msg.className = 'form-msg';
+
+  try {
+    if (file) {
+      coverUrl = await uploadCoverImage(file);
+    }
+  } catch (err) {
+    msg.textContent = 'Image upload failed: ' + err.message;
+    msg.className = 'form-msg error';
+    return;
+  }
+
+  const payload = {
+    title,
+    description: desc,
+    category: document.getElementById('pfoCategory').value,
+    published: document.getElementById('pfoPublished').value === 'true',
+    features: document.getElementById('pfoFeatures').value.split('\n').map(s=>s.trim()).filter(Boolean),
+    completion_date: document.getElementById('pfoDate').value || null,
+    price: parseFloat(document.getElementById('pfoPrice').value) || null,
+    client_name: document.getElementById('pfoClient').value.trim() || null,
+    cover_url: coverUrl,
+    screenshots: document.getElementById('pfoScreenshots').value.split('\n').map(s=>s.trim()).filter(Boolean),
+  };
+
+  let result;
+  let newEntryId = editId;
+  if (editId) {
+    result = await sb.from('portfolio').update(payload).eq('id', editId);
+  } else {
+    result = await sb.from('portfolio').insert(payload).select().single();
+    if (result.data) newEntryId = result.data.id;
+  }
+
+  if (result.error) {
+    msg.textContent = 'Save failed: ' + result.error.message;
+    msg.className = 'form-msg error';
+    return;
+  }
+
+  // If this entry was created from "Add to Portfolio" on a completed
+  // project, link the two records so the project shows "In Portfolio".
+  if (pendingLinkedProjectId && newEntryId) {
+    await sb.from('projects').update({ portfolio_id: newEntryId }).eq('id', pendingLinkedProjectId);
+    pendingLinkedProjectId = null;
+    await loadProjects();
+  }
+
+  showToast(editId ? 'Entry updated.' : 'Entry added.');
+  closeModal('portfolioFormOverlay');
+  await loadPortfolioAdmin();
+}
+
+function toggleCustomCategory() {
+  // Reserved for future custom-category text input; category select
+  // already includes "Custom" and "Other" as free-form-style options.
+}
+</script>
+</body>
+</html>
