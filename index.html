@@ -448,6 +448,9 @@ footer { background:var(--bg);border-top:1px solid var(--border);padding:2.5rem 
   /* Portfolio mobile */
   .portfolio-grid { grid-template-columns:1fr; }
   .portfolio-header { flex-direction:column;align-items:flex-start;gap:1rem; }
+  /* Tracker mobile */
+  .tracker-grid { grid-template-columns:1fr; }
+  .tracker-header { flex-direction:column;align-items:flex-start;gap:1rem; }
   /* FAQ mobile */
   .faq-header { flex-direction:column;align-items:flex-start;gap:1.5rem; }
 }
@@ -475,6 +478,28 @@ footer { background:var(--bg);border-top:1px solid var(--border);padding:2.5rem 
 .portfolio-admin-btn { padding:.25rem .55rem;font-family:'Syne',sans-serif;font-size:.58rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;border:1px solid var(--border);background:var(--bg3);cursor:pointer;transition:all .2s;color:var(--text-muted); }
 .portfolio-admin-btn:hover { color:var(--gold);border-color:var(--gold); }
 .portfolio-admin-btn.del:hover { color:var(--red);border-color:var(--red); }
+
+/* ══════════════════════════════════════════
+   PUBLIC PROJECT TRACKER
+══════════════════════════════════════════ */
+.tracker-section { background:var(--bg);padding:7rem 4rem; }
+.tracker-header { display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:4rem;flex-wrap:wrap;gap:2rem; }
+.tracker-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem; }
+.tracker-loading, .tracker-empty { grid-column:1/-1;text-align:center;padding:4rem;color:var(--text-dim);font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-style:italic; }
+.tracker-card { background:var(--bg3);border:1px solid var(--border);padding:1.75rem;transition:border-color .3s,transform .3s; }
+.tracker-card:hover { border-color:var(--border-hover);transform:translateY(-4px); }
+.tracker-card.overdue { border-color:rgba(224,82,82,.35); }
+.tracker-card-top { display:flex;justify-content:space-between;align-items:flex-start;gap:.75rem;margin-bottom:1rem; }
+.tracker-card-name { font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;letter-spacing:.03em; }
+.tracker-status-pill { padding:.2rem .65rem;font-family:'Syne',sans-serif;font-size:.6rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;border:1px solid; }
+.tracker-status-pill.pending { color:var(--text-muted);border-color:var(--border); }
+.tracker-status-pill.in-progress { color:var(--gold);border-color:var(--gold-dim); }
+.tracker-status-pill.review { color:#7ab8e0;border-color:rgba(122,184,224,.4); }
+.tracker-status-pill.completed { color:var(--green);border-color:rgba(82,224,138,.4); }
+.tracker-status-pill.cancelled { color:var(--text-dim);border-color:var(--border);text-decoration:line-through; }
+.tracker-card-price { font-family:'Cormorant Garamond',serif;font-size:1.6rem;color:var(--gold);margin-bottom:1rem; }
+.tracker-card-dates { display:flex;justify-content:space-between;font-size:.75rem;color:var(--text-dim);font-family:'Syne',sans-serif;letter-spacing:.03em;padding-top:1rem;border-top:1px solid var(--border); }
+.tracker-card-dates span:last-child { text-align:right; }
 
 /* ══════════════════════════════════════════
    FAQ
@@ -611,6 +636,7 @@ footer { background:var(--bg);border-top:1px solid var(--border);padding:2.5rem 
     <li><a href="#services">Services</a></li>
     <li><a href="#pricing">Pricing</a></li>
     <li><a href="#portfolio">Portfolio</a></li>
+    <li><a href="#tracker">Project Tracker</a></li>
     <li><a href="#process">Process</a></li>
     <li><a href="#faq">FAQ</a></li>
     <li><a href="#reviews">Reviews</a></li>
@@ -945,6 +971,24 @@ footer { background:var(--bg);border-top:1px solid var(--border);padding:2.5rem 
   </div>
   <div class="portfolio-grid" id="portfolioGrid">
     <div class="portfolio-loading">
+      <span class="loading-dot">.</span><span class="loading-dot" style="animation-delay:.2s">.</span><span class="loading-dot" style="animation-delay:.4s">.</span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     PUBLIC PROJECT TRACKER
+═══════════════════════════════════════════════════════════════ -->
+<section class="tracker-section" id="tracker">
+  <div class="tracker-header reveal">
+    <div>
+      <span class="section-eyebrow">Live Status</span>
+      <h2 class="section-title">Project <em>tracker</em>.</h2>
+    </div>
+    <p class="services-desc">Real-time status on every server we're building or have delivered.</p>
+  </div>
+  <div class="tracker-grid" id="trackerGrid">
+    <div class="tracker-loading">
       <span class="loading-dot">.</span><span class="loading-dot" style="animation-delay:.2s">.</span><span class="loading-dot" style="animation-delay:.4s">.</span>
     </div>
   </div>
@@ -2588,7 +2632,71 @@ async function initPortfolio() {
   await loadPortfolio();
 }
 
+// ── PUBLIC PROJECT TRACKER ──────────────────────────────────────────────
+// Reads from the public_projects view, which only ever exposes
+// project_name, price, status, start_date, and deadline — never
+// client_name, notes, or anything private. That's enforced by the
+// view's own column list in Supabase, not just this frontend code.
+const TRACKER_DAY_MS = 86400000;
+function trackerParseDate(str) {
+  if (!str) return null;
+  const [y,m,d] = str.split('-').map(Number);
+  return new Date(y, m-1, d);
+}
+function trackerFmtDate(str) {
+  if (!str) return '—';
+  return trackerParseDate(str).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+}
+function trackerFmtMoney(n) {
+  return '$' + (Number(n)||0).toLocaleString('en-US', { minimumFractionDigits:0, maximumFractionDigits:2 });
+}
+function trackerStatusClass(status) {
+  return (status||'').toLowerCase().replace(' ', '-');
+}
+function trackerIsOverdue(p) {
+  if (p.status === 'Completed' || p.status === 'Cancelled' || !p.deadline) return false;
+  const today = new Date(); today.setHours(0,0,0,0);
+  return trackerParseDate(p.deadline) < today;
+}
+
+async function loadTracker() {
+  const grid = document.getElementById('trackerGrid');
+  const { data, error } = await sb
+    .from('public_projects')
+    .select('project_name, price, status, start_date, deadline')
+    .order('start_date', { ascending: false });
+
+  if (error) {
+    grid.innerHTML = '<div class="tracker-empty">Tracker coming soon.</div>';
+    console.error(error);
+    return;
+  }
+
+  if (!data || !data.length) {
+    grid.innerHTML = '<div class="tracker-empty">No active projects to show right now — check back soon.</div>';
+    return;
+  }
+
+  grid.innerHTML = data.map(p => {
+    const overdue = trackerIsOverdue(p);
+    return `<div class="tracker-card reveal${overdue?' overdue':''}">
+      <div class="tracker-card-top">
+        <div class="tracker-card-name">${escapeHtml(p.project_name)}</div>
+        <span class="tracker-status-pill ${trackerStatusClass(p.status)}">${escapeHtml(p.status)}</span>
+      </div>
+      <div class="tracker-card-price">${trackerFmtMoney(p.price)}</div>
+      <div class="tracker-card-dates">
+        <span>Started<br>${trackerFmtDate(p.start_date)}</span>
+        <span>${p.status==='Completed'?'Delivered':'Deadline'}<br>${trackerFmtDate(p.deadline)}</span>
+      </div>
+    </div>`;
+  }).join('');
+
+  document.querySelectorAll('#trackerGrid .reveal').forEach(el => obs.observe(el));
+}
+
 initPortfolio();
+loadTracker();
 </script>
 </body>
 </html>
