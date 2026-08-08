@@ -291,13 +291,14 @@ section { padding:7rem 4rem; }
 .btn-discord svg { width:18px;height:18px;fill:#fff; }
 
 /* Review Form */
-.review-form-wrap { border:1px solid var(--border);padding:3rem;background:var(--bg3);margin-bottom:3rem;display:none; }
-.review-form-wrap.visible { display:block; }
-.form-user-header { display:flex;align-items:center;gap:1rem;margin-bottom:2rem;padding-bottom:1.5rem;border-bottom:1px solid var(--border); }
-.form-avatar { width:44px;height:44px;border-radius:50%;border:1px solid var(--border-hover);object-fit:cover; }
-.form-username { font-family:'Syne',sans-serif;font-weight:600;font-size:.85rem; }
-.form-username span { display:block;font-size:.68rem;color:var(--text-muted);font-weight:400;letter-spacing:.1em;text-transform:uppercase;margin-top:.15rem; }
-.verified-badge { display:inline-flex;align-items:center;gap:.3rem;background:rgba(201,168,76,.1);border:1px solid var(--border);padding:.15rem .5rem;font-family:'Syne',sans-serif;font-size:.58rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);margin-left:.5rem; }
+.review-form-wrap { border:1px solid var(--border);padding:3rem;background:var(--bg3);margin-bottom:3rem;display:block; }
+.review-form-wrap.editing { border-color:var(--gold-dim); }
+.form-user-header { display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;padding-bottom:1.5rem;border-bottom:1px solid var(--border); }
+.form-user-header p { font-size:.85rem;color:var(--text-muted);line-height:1.7;margin:0; }
+.editing-badge { display:none;align-items:center;gap:.3rem;background:rgba(201,168,76,.1);border:1px solid var(--border);padding:.15rem .5rem;font-family:'Syne',sans-serif;font-size:.58rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);white-space:nowrap; }
+.review-form-wrap.editing .editing-badge { display:inline-flex; }
+.form-field input[type="text"] { width:100%;background:var(--bg4);border:1px solid var(--border);color:var(--text);padding:.85rem 1.2rem;font-family:'DM Sans',sans-serif;font-size:.9rem;font-weight:300;transition:border-color .3s;outline:none; }
+.form-field input[type="text"]:focus { border-color:var(--gold-dim); }
 
 /* Star Input */
 .star-input-label { font-family:'Syne',sans-serif;font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-muted);margin-bottom:.8rem;display:block; }
@@ -892,7 +893,7 @@ footer { background:var(--bg);border-top:1px solid var(--border);padding:2.5rem 
       <span class="section-eyebrow">Client Reviews</span>
       <h2 class="section-title">What clients<br><em>say</em>.</h2>
     </div>
-    <p class="services-desc">Real reviews from real Discord server owners. Login with Discord to share your experience.</p>
+    <p class="services-desc">Real reviews from real Discord server owners. Leave your name, a rating, and your experience below.</p>
   </div>
 
   <!-- Rating Overview -->
@@ -915,25 +916,15 @@ footer { background:var(--bg);border-top:1px solid var(--border);padding:2.5rem 
     </div>
   </div>
 
-  <!-- Auth Gate (shown when logged out) -->
-  <div class="auth-gate reveal" id="authGate">
-    <p>Have you worked with Digital Structure Co.?<br>Login with Discord to leave your review.</p>
-    <button class="btn-discord" onclick="loginWithDiscord()">
-      <svg viewBox="0 0 24 24"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057.1 18.079.11 18.1.129 18.114c2.059 1.513 4.053 2.432 6.021 3.04a.077.077 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028c1.978-.608 3.972-1.525 6.03-3.04a.077.077 0 0 0 .032-.027c.502-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
-      Login with Discord
-    </button>
-  </div>
-
-  <!-- Review Form (shown when logged in) -->
+  <!-- Review Form (open to everyone, no login required) -->
   <div class="review-form-wrap reveal" id="reviewFormWrap">
     <div class="form-user-header">
-      <img class="form-avatar" id="formAvatar" src="" alt="">
-      <div>
-        <div class="form-username" id="formUsername">
-          <span></span>
-          <span class="verified-badge">✦ Verified Client</span>
-        </div>
-      </div>
+      <p>Have you worked with Digital Structure Co.? Share your experience below.</p>
+      <span class="editing-badge" id="editingBadge">✦ Editing Your Review</span>
+    </div>
+    <div class="form-field">
+      <label>Your Name</label>
+      <input type="text" id="reviewerName" maxlength="40" placeholder="e.g. Alex M.">
     </div>
     <span class="star-input-label">Your Rating</span>
     <div class="star-input" id="starInput">
@@ -1767,7 +1758,7 @@ const SUPABASE_READY = true;
 
 // ── SUPABASE GUARD ─────────────────────────────────────────────────────
 if (!SUPABASE_READY) {
-  document.getElementById('authGate').innerHTML = `
+  document.getElementById('reviewFormWrap').innerHTML = `
     <p style="color:var(--gold);font-family:'Syne',sans-serif;font-size:.8rem;letter-spacing:.1em;">
       ⚙ Supabase not configured yet.<br>
       <span style="color:var(--text-muted);font-weight:300;">Follow SETUP.md in the repo to enable the review system.</span>
@@ -1815,13 +1806,12 @@ async function logout() {
   await sb.auth.signOut();
   currentUser = null; currentProfile = null; isAdmin = false;
   updateNavUI(null);
-  document.getElementById('authGate').style.display = '';
-  document.getElementById('reviewFormWrap').classList.remove('visible');
   document.getElementById('adminToggle').classList.remove('visible');
   document.getElementById('adminPanelLink').style.display = 'none';
   document.getElementById('portfolioAdminLink').style.display = 'none';
   document.getElementById('projectDashboardLink').style.display = 'none';
   closeDropdown();
+  await loadReviews();
   showToast('Signed out.');
 }
 
@@ -1925,7 +1915,7 @@ document.addEventListener('click', e => {
 // ── REVIEWS ────────────────────────────────────────────────────────────
 async function loadReviews() {
   let query = sb.from('reviews')
-    .select('*, profiles(username, display_name, avatar_url, is_admin)')
+    .select('*')
     .order('is_pinned', { ascending: false })
     .order('created_at', { ascending: false });
 
@@ -2013,11 +2003,8 @@ function renderReviews() {
 }
 
 function buildCard(r) {
-  const p = r.profiles || {};
-  const name = p.display_name || p.username || 'Anonymous';
-  const avatar = p.avatar_url
-    ? `<img class="card-avatar" src="${p.avatar_url}" alt="${name}" onerror="this.outerHTML='<div class=card-avatar-fallback>${name.charAt(0).toUpperCase()}</div>'">`
-    : `<div class="card-avatar-fallback">${name.charAt(0).toUpperCase()}</div>`;
+  const name = r.reviewer_name || 'Anonymous';
+  const avatar = `<div class="card-avatar-fallback">${name.charAt(0).toUpperCase()}</div>`;
   const stars = [1,2,3,4,5].map(i=>`<span class="c-star${i>r.rating?' empty':''}" >★</span>`).join('');
   const date = new Date(r.created_at).toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'});
   const adminActions = isAdmin ? `
@@ -2032,7 +2019,7 @@ function buildCard(r) {
     <div class="card-header">
       ${avatar}
       <div class="card-meta">
-        <div class="card-username">${escapeHtml(name)}${p.is_admin?'<span class="verified-badge">✦ Owner</span>':''}</div>
+        <div class="card-username">${escapeHtml(name)}</div>
         <div class="card-date">${date}</div>
       </div>
     </div>
@@ -2046,27 +2033,32 @@ function escapeHtml(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-// ── SUBMIT REVIEW ──────────────────────────────────────────────────────
+// ── SUBMIT REVIEW (no login required) ──────────────────────────────────
+const MY_REVIEW_KEY = 'dsc_my_review_id';
+
 async function submitReview() {
-  if (!currentUser) return;
+  const nameEl = document.getElementById('reviewerName');
   const ratingEl = document.querySelector('input[name="rating"]:checked');
   const text = document.getElementById('reviewText').value.trim();
+  const name = nameEl.value.trim();
   const msg = document.getElementById('formMsg');
   const btn = document.getElementById('submitBtn');
 
+  if (!name || name.length < 2) { msg.textContent = 'Please enter your name.'; msg.className='form-msg error'; return; }
   if (!ratingEl) { msg.textContent = 'Please select a star rating.'; msg.className='form-msg error'; return; }
   if (!text || text.length < 10) { msg.textContent = 'Please write at least 10 characters.'; msg.className='form-msg error'; return; }
 
   btn.disabled = true; btn.textContent = 'Submitting...';
   msg.textContent = ''; msg.className = 'form-msg';
 
-  const existing = allReviews.find(r=>r.user_id===currentUser.id);
+  const myId = localStorage.getItem(MY_REVIEW_KEY);
+  const existing = myId ? allReviews.find(r=>r.id===myId) : null;
 
   let result;
   if (existing) {
-    result = await sb.from('reviews').update({ rating:+ratingEl.value, review_text:text, updated_at:new Date().toISOString() }).eq('id', existing.id);
+    result = await sb.from('reviews').update({ reviewer_name:name, rating:+ratingEl.value, review_text:text, updated_at:new Date().toISOString() }).eq('id', existing.id).select().single();
   } else {
-    result = await sb.from('reviews').insert({ user_id:currentUser.id, rating:+ratingEl.value, review_text:text });
+    result = await sb.from('reviews').insert({ reviewer_name:name, rating:+ratingEl.value, review_text:text }).select().single();
   }
 
   btn.disabled = false; btn.textContent = 'Submit Review';
@@ -2076,6 +2068,7 @@ async function submitReview() {
     msg.className = 'form-msg error';
     showToast('Submission failed.', 'err');
   } else {
+    if (result.data?.id) localStorage.setItem(MY_REVIEW_KEY, result.data.id);
     msg.textContent = existing ? 'Review updated!' : 'Review submitted — thank you!';
     msg.className = 'form-msg success';
     showToast(existing ? 'Review updated!' : 'Review submitted!');
@@ -2085,13 +2078,21 @@ async function submitReview() {
 }
 
 function populateForm() {
-  if (!currentProfile) return;
-  const existing = allReviews.find(r=>r.user_id===currentUser.id);
+  const myId = localStorage.getItem(MY_REVIEW_KEY);
+  const wrap = document.getElementById('reviewFormWrap');
+  if (!myId) { wrap.classList.remove('editing'); return; }
+  const existing = allReviews.find(r=>r.id===myId);
   if (existing) {
+    document.getElementById('reviewerName').value = existing.reviewer_name || '';
     const radio = document.querySelector(`input[name="rating"][value="${existing.rating}"]`);
     if(radio) radio.checked = true;
     document.getElementById('reviewText').value = existing.review_text || '';
     document.getElementById('submitBtn').textContent = 'Update Review';
+    wrap.classList.add('editing');
+  } else {
+    // the review was deleted (e.g. by admin) — clear stale reference
+    localStorage.removeItem(MY_REVIEW_KEY);
+    wrap.classList.remove('editing');
   }
 }
 
@@ -2157,20 +2158,14 @@ function renderAdminPanel() {
 // ── INIT ───────────────────────────────────────────────────────────────
 async function init() {
   sb.auth.onAuthStateChange(async (event, session) => {
+    // Discord sign-in is now only used for site-owner admin access,
+    // not for leaving reviews — the review form is always open.
     if (session?.user) {
       currentUser = session.user;
       currentProfile = await getProfile(currentUser.id);
       isAdmin = currentProfile?.is_admin || false;
 
       updateNavUI(currentProfile);
-      document.getElementById('authGate').style.display = 'none';
-      document.getElementById('reviewFormWrap').classList.add('visible');
-
-      const fa = document.getElementById('formAvatar');
-      fa.src = currentProfile?.avatar_url || `https://ui-avatars.com/api/?name=U&background=1e1e1e&color=c9a84c`;
-
-      const fuName = document.getElementById('formUsername').querySelector('span');
-      fuName.textContent = currentProfile?.display_name || currentProfile?.username || 'Discord User';
 
       if (isAdmin) {
         document.getElementById('adminToggle').classList.add('visible');
@@ -2180,25 +2175,22 @@ async function init() {
       }
 
       await loadReviews();
-      populateForm();
       renderPortfolio(); // re-render to show admin controls
     } else {
       currentUser = null; currentProfile = null; isAdmin = false;
       updateNavUI(null);
-      document.getElementById('authGate').style.display = '';
-      document.getElementById('reviewFormWrap').classList.remove('visible');
       await loadReviews();
       renderPortfolio(); // re-render to hide admin controls
     }
   });
 
   const { data: { session } } = await sb.auth.getSession();
-  if (!session) await loadReviews();
+  if (!session) { await loadReviews(); populateForm(); }
 
   sb.channel('reviews-realtime')
     .on('postgres_changes', { event: '*', schema: 'public', table: 'reviews' }, async ()=>{
       await loadReviews();
-      if(currentUser) populateForm();
+      populateForm();
     })
     .subscribe();
 }
