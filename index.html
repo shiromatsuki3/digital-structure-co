@@ -136,6 +136,14 @@ nav { position:fixed;top:0;left:0;right:0;z-index:500;padding:1.5rem 4rem;displa
 .nav-dropdown a, .nav-dropdown button { display:block;width:100%;text-align:left;padding:.75rem 1rem;font-family:'Syne',sans-serif;font-size:.72rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);text-decoration:none;background:none;border:none;cursor:pointer;transition:all .2s;border-bottom:1px solid var(--border); }
 .nav-dropdown a:last-child, .nav-dropdown button:last-child { border-bottom:none; }
 .nav-dropdown a:hover, .nav-dropdown button:hover { background:var(--bg4);color:var(--gold); }
+
+/* NAV "More" DROPDOWN (groups less-frequent nav links) */
+.nav-more-wrap { position:relative; }
+.nav-more-dropdown { position:absolute;top:calc(100% + .8rem);left:50%;transform:translateX(-50%);background:var(--bg3);border:1px solid var(--border);min-width:180px;display:none;flex-direction:column;overflow:hidden;z-index:510; }
+.nav-more-dropdown.open { display:flex; }
+.nav-more-dropdown a { display:block;width:100%;text-align:left;padding:.75rem 1rem;font-family:'Syne',sans-serif;font-size:.72rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);text-decoration:none;transition:all .2s;border-bottom:1px solid var(--border); }
+.nav-more-dropdown a:last-child { border-bottom:none; }
+.nav-more-dropdown a:hover { background:var(--bg4);color:var(--gold); }
 .nav-login-btn { background:transparent;border:1px solid var(--border);color:var(--text-muted);padding:.55rem 1.2rem;font-family:'Syne',sans-serif;font-size:.72rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;transition:all .3s;display:flex;align-items:center;gap:.5rem; }
 .nav-login-btn:hover { border-color:var(--gold-dim);color:var(--gold); }
 .discord-icon { width:16px;height:16px;fill:currentColor; }
@@ -636,10 +644,15 @@ footer { background:var(--bg);border-top:1px solid var(--border);padding:2.5rem 
     <li><a href="#services">Services</a></li>
     <li><a href="#pricing">Pricing</a></li>
     <li><a href="#portfolio">Portfolio</a></li>
-    <li><a href="#tracker">Project Tracker</a></li>
-    <li><a href="#process">Process</a></li>
-    <li><a href="#faq">FAQ</a></li>
     <li><a href="#reviews">Reviews</a></li>
+    <li class="nav-more-wrap">
+      <a href="#" onclick="toggleNavMore(event)">More ▾</a>
+      <div class="nav-more-dropdown" id="navMoreDropdown">
+        <a href="#tracker" onclick="closeNavMore()">Project Tracker</a>
+        <a href="#process" onclick="closeNavMore()">Process</a>
+        <a href="#faq" onclick="closeNavMore()">FAQ</a>
+      </div>
+    </li>
   </ul>
   <div class="nav-right">
 
@@ -1895,6 +1908,18 @@ function closeDropdown() {
 }
 document.addEventListener('click', e => {
   if (!document.getElementById('navUser').contains(e.target)) closeDropdown();
+});
+
+function toggleNavMore(e) {
+  e.preventDefault();
+  document.getElementById('navMoreDropdown').classList.toggle('open');
+}
+function closeNavMore() {
+  document.getElementById('navMoreDropdown').classList.remove('open');
+}
+document.addEventListener('click', e => {
+  const wrap = document.querySelector('.nav-more-wrap');
+  if (wrap && !wrap.contains(e.target)) closeNavMore();
 });
 
 // ── REVIEWS ────────────────────────────────────────────────────────────
