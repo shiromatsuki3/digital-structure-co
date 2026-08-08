@@ -640,6 +640,7 @@ footer { background:var(--bg);border-top:1px solid var(--border);padding:2.5rem 
         <a href="#reviews" onclick="closeDropdown()">My Review</a>
         <a href="#" onclick="openAdminPanel()" id="adminPanelLink" style="display:none">Admin Panel ⚙</a>
         <a href="#" onclick="openPortfolioAdmin()" id="portfolioAdminLink" style="display:none">Portfolio Admin ◈</a>
+        <a href="admin.html" id="projectDashboardLink" style="display:none">Project Dashboard ◈</a>
         <button onclick="logout()">Sign Out</button>
       </div>
     </div>
@@ -1762,6 +1763,7 @@ async function logout() {
   document.getElementById('adminToggle').classList.remove('visible');
   document.getElementById('adminPanelLink').style.display = 'none';
   document.getElementById('portfolioAdminLink').style.display = 'none';
+  document.getElementById('projectDashboardLink').style.display = 'none';
   closeDropdown();
   showToast('Signed out.');
 }
@@ -2105,6 +2107,7 @@ async function init() {
         document.getElementById('adminToggle').classList.add('visible');
         document.getElementById('adminPanelLink').style.display = '';
         document.getElementById('portfolioAdminLink').style.display = '';
+        document.getElementById('projectDashboardLink').style.display = '';
       }
 
       await loadReviews();
