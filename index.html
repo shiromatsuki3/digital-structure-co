@@ -624,6 +624,78 @@ footer { background:var(--bg);border-top:1px solid var(--border);padding:2.5rem 
 .lightbox-feature-tag { border:1px solid var(--border);padding:.25rem .7rem;font-size:.68rem;color:var(--gold-dim);font-family:'Syne',sans-serif;letter-spacing:.08em; }
 .lightbox-desc { font-size:.9rem;color:var(--text-muted);line-height:1.9; }
 
+/* ══════════════════════════════════════════════════════════════════
+   MOBILE FIXES — placed last on purpose.
+   The original @media(max-width:900px) block (further up this file)
+   sets overrides for .portfolio-grid, .tracker-grid, .faq-header,
+   .modal-box/.modal-overlay, .builder-body/.builder-right,
+   .order-body/.order-form-right and .lightbox-inner/.lightbox-left —
+   but each of those selectors is re-declared, unconditionally, in a
+   section further down the stylesheet. In CSS, when two rules have
+   identical specificity, the one that appears LAST in the source
+   wins, regardless of whether the other one is wrapped in a media
+   query. Because the plain desktop rules came after the mobile
+   overrides, the mobile styles were being silently discarded on
+   every phone — that's why grids stayed 3-columns-wide, modals
+   stayed full desktop width, and pages looked "zoomed out" with
+   huge blank margins. Re-stating the same rules down here (after
+   everything else) restores them, and adds a couple of missing
+   small-phone refinements on top.
+   ══════════════════════════════════════════════════════════════════ */
+html { max-width:100%;overflow-x:hidden; }
+body { max-width:100%; }
+
+@media (max-width:900px) {
+  .portfolio-grid { grid-template-columns:1fr; }
+  .portfolio-header { flex-direction:column;align-items:flex-start;gap:1rem; }
+  .tracker-grid { grid-template-columns:1fr; }
+  .tracker-header { flex-direction:column;align-items:flex-start;gap:1rem; }
+  .faq-header { flex-direction:column;align-items:flex-start;gap:1.5rem; }
+  .faq-search-wrap { width:100%; }
+  .faq-search { width:100%; }
+
+  .modal-overlay { padding:0;align-items:flex-end; }
+  .modal-box { width:100%;max-width:100%;border-radius:0;margin:0;max-height:92vh; }
+  .modal-header { padding:1.5rem; }
+  .modal-body { padding:1.5rem; }
+
+  .builder-body { flex-direction:column;gap:1.5rem; }
+  .builder-right { min-width:unset;max-width:unset; }
+  .builder-summary { position:static; }
+
+  .order-body { flex-direction:column;gap:1.5rem; }
+  .order-form-right { min-width:unset;max-width:unset; }
+  .order-summary-box { position:static; }
+
+  .lightbox-inner { flex-direction:column; }
+  .lightbox-left { min-width:unset;max-width:unset;padding:1.5rem; }
+  .lightbox-right { padding:0 1.5rem 1.5rem; }
+  .lightbox-thumb { width:calc(33.33% - .35rem); }
+
+  .rating-overview { padding:2rem 1.5rem; }
+  .custom-card { padding:2rem 1.5rem; }
+  .auth-gate, .review-form-wrap { padding:1.75rem; }
+  nav { padding:1rem 1.2rem; }
+  .nav-logo { font-size:.85rem; }
+}
+
+/* Extra tightening for narrow phones (most phones are 360–430px wide) */
+@media (max-width:480px) {
+  section, .portfolio-section, .tracker-section, .faq-section, .reviews { padding-left:1.2rem;padding-right:1.2rem; }
+  .hero { padding:7rem 1.2rem 3rem; }
+  .hero-actions { flex-direction:column;align-items:stretch;gap:.8rem;width:100%; }
+  .btn-primary, .btn-secondary { width:100%;text-align:center;justify-content:center; }
+  .pricing-grid { grid-template-columns:1fr; }
+  .cta-buttons { flex-direction:column;align-items:stretch; }
+  .cta-buttons .btn-primary, .cta-buttons .btn-outline { width:100%;text-align:center; }
+  .rating-big .num { font-size:4rem; }
+  .lightbox-thumb { width:calc(50% - .25rem); }
+  .payment-methods { gap:.6rem; }
+  .pay-pill { padding:.75rem 1.4rem;font-size:.75rem; }
+  footer { padding:2rem 1.2rem; }
+  .footer-links { flex-wrap:wrap;justify-content:center;gap:1rem; }
+}
+
 /* ── Portfolio Admin Form ─────────────────────────────────────── */
 .portfolio-admin-form { border-top:1px solid var(--border);padding-top:1.5rem; }
 .pa-entry-row { display:flex;align-items:center;justify-content:space-between;padding:.75rem 0;border-bottom:1px solid var(--border);gap:1rem;flex-wrap:wrap; }
