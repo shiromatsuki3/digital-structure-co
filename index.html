@@ -347,6 +347,22 @@ section { padding:7rem 4rem; }
 .card-btn.unhide:hover { border-color:var(--green);color:var(--green); }
 .review-card.hidden-review { opacity:.4;border-style:dashed; }
 .no-reviews { text-align:center;padding:4rem;color:var(--text-dim);font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-style:italic; }
+.reviews-maintenance-wrap { position:relative; }
+.reviews-maintenance-wrap .reviews-blur-target { filter:blur(6px); pointer-events:none; user-select:none; }
+.reviews-maintenance-overlay {
+  position:absolute; inset:0; z-index:5;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:.75rem; text-align:center; padding:2rem;
+}
+.reviews-maintenance-overlay .badge {
+  font-family:'Syne',sans-serif; font-size:.68rem; letter-spacing:.15em; text-transform:uppercase;
+  color:var(--gold); border:1px solid var(--gold); padding:.6rem 1.4rem; border-radius:2px;
+  background:rgba(0,0,0,.55); backdrop-filter:blur(2px);
+}
+.reviews-maintenance-overlay .sub {
+  font-family:'Cormorant Garamond',serif; font-size:1.15rem; font-style:italic; color:var(--text-muted);
+  max-width:32rem;
+}
 
 /* Filters */
 .review-controls { display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;flex-wrap:wrap;gap:1rem; }
@@ -969,68 +985,78 @@ body { max-width:100%; }
     <p class="services-desc">Real reviews from real Discord server owners. Leave your name, a rating, and your experience below.</p>
   </div>
 
-  <!-- Rating Overview -->
-  <div class="rating-overview reveal">
-    <div class="rating-big">
-      <span class="num" id="overallRating">—</span>
-      <div class="rating-stars-display" id="overallStars"></div>
-      <span class="label" id="overallLabel">Loading reviews...</span>
+  <!-- Reviews content — temporarily under maintenance -->
+  <div class="reviews-maintenance-wrap">
+    <div class="reviews-maintenance-overlay">
+      <span class="badge">Under Maintenance</span>
+      <p class="sub">Client reviews are temporarily unavailable while we make improvements. Please check back soon.</p>
     </div>
-    <div class="rating-breakdown" id="breakdownBars">
-      <div class="breakdown-row"><span class="breakdown-label">5★</span><div class="breakdown-track"><div class="breakdown-fill" id="bar5" style="width:0%"></div></div><span class="breakdown-pct" id="pct5">0%</span></div>
-      <div class="breakdown-row"><span class="breakdown-label">4★</span><div class="breakdown-track"><div class="breakdown-fill" id="bar4" style="width:0%"></div></div><span class="breakdown-pct" id="pct4">0%</span></div>
-      <div class="breakdown-row"><span class="breakdown-label">3★</span><div class="breakdown-track"><div class="breakdown-fill" id="bar3" style="width:0%"></div></div><span class="breakdown-pct" id="pct3">0%</span></div>
-      <div class="breakdown-row"><span class="breakdown-label">2★</span><div class="breakdown-track"><div class="breakdown-fill" id="bar2" style="width:0%"></div></div><span class="breakdown-pct" id="pct2">0%</span></div>
-      <div class="breakdown-row"><span class="breakdown-label">1★</span><div class="breakdown-track"><div class="breakdown-fill" id="bar1" style="width:0%"></div></div><span class="breakdown-pct" id="pct1">0%</span></div>
-    </div>
-    <div class="rating-meta">
-      <span class="rating-total" id="totalReviews">0</span>
-      <span class="label">Total Reviews</span>
-    </div>
-  </div>
 
-  <!-- Review Form (open to everyone, no login required) -->
-  <div class="review-form-wrap reveal" id="reviewFormWrap">
-    <div class="form-user-header">
-      <p>Have you worked with Digital Structure Co.? Share your experience below.</p>
-      <span class="editing-badge" id="editingBadge">✦ Editing Your Review</span>
-    </div>
-    <div class="form-field">
-      <label>Your Name</label>
-      <input type="text" id="reviewerName" maxlength="40" placeholder="e.g. Alex M.">
-    </div>
-    <span class="star-input-label">Your Rating</span>
-    <div class="star-input" id="starInput">
-      <input type="radio" name="rating" id="s5" value="5"><label for="s5">★</label>
-      <input type="radio" name="rating" id="s4" value="4"><label for="s4">★</label>
-      <input type="radio" name="rating" id="s3" value="3"><label for="s3">★</label>
-      <input type="radio" name="rating" id="s2" value="2"><label for="s2">★</label>
-      <input type="radio" name="rating" id="s1" value="1"><label for="s1">★</label>
-    </div>
-    <div class="form-field">
-      <label>Your Review</label>
-      <textarea id="reviewText" placeholder="Share your experience working with Digital Structure Co. What did you order? How was the result?"></textarea>
-    </div>
-    <div class="form-submit">
-      <button class="btn-submit" id="submitBtn" onclick="submitReview()">Submit Review</button>
-      <span class="form-msg" id="formMsg"></span>
-    </div>
-  </div>
+    <div class="reviews-blur-target" aria-hidden="true">
+      <!-- Rating Overview -->
+      <div class="rating-overview reveal">
+        <div class="rating-big">
+          <span class="num" id="overallRating">—</span>
+          <div class="rating-stars-display" id="overallStars"></div>
+          <span class="label" id="overallLabel">Loading reviews...</span>
+        </div>
+        <div class="rating-breakdown" id="breakdownBars">
+          <div class="breakdown-row"><span class="breakdown-label">5★</span><div class="breakdown-track"><div class="breakdown-fill" id="bar5" style="width:0%"></div></div><span class="breakdown-pct" id="pct5">0%</span></div>
+          <div class="breakdown-row"><span class="breakdown-label">4★</span><div class="breakdown-track"><div class="breakdown-fill" id="bar4" style="width:0%"></div></div><span class="breakdown-pct" id="pct4">0%</span></div>
+          <div class="breakdown-row"><span class="breakdown-label">3★</span><div class="breakdown-track"><div class="breakdown-fill" id="bar3" style="width:0%"></div></div><span class="breakdown-pct" id="pct3">0%</span></div>
+          <div class="breakdown-row"><span class="breakdown-label">2★</span><div class="breakdown-track"><div class="breakdown-fill" id="bar2" style="width:0%"></div></div><span class="breakdown-pct" id="pct2">0%</span></div>
+          <div class="breakdown-row"><span class="breakdown-label">1★</span><div class="breakdown-track"><div class="breakdown-fill" id="bar1" style="width:0%"></div></div><span class="breakdown-pct" id="pct1">0%</span></div>
+        </div>
+        <div class="rating-meta">
+          <span class="rating-total" id="totalReviews">0</span>
+          <span class="label">Total Reviews</span>
+        </div>
+      </div>
 
-  <!-- Review Controls -->
-  <div class="review-controls reveal">
-    <div class="filter-tabs">
-      <button class="filter-tab active" onclick="filterReviews('all', this)">All Reviews</button>
-      <button class="filter-tab" onclick="filterReviews('top', this)">Top Rated</button>
-      <button class="filter-tab" onclick="filterReviews('pinned', this)">Featured</button>
-    </div>
-    <span class="reviews-count" id="reviewsCount"></span>
-  </div>
+      <!-- Review Form (open to everyone, no login required) -->
+      <div class="review-form-wrap reveal" id="reviewFormWrap">
+        <div class="form-user-header">
+          <p>Have you worked with Digital Structure Co.? Share your experience below.</p>
+          <span class="editing-badge" id="editingBadge">✦ Editing Your Review</span>
+        </div>
+        <div class="form-field">
+          <label>Your Name</label>
+          <input type="text" id="reviewerName" maxlength="40" placeholder="e.g. Alex M.">
+        </div>
+        <span class="star-input-label">Your Rating</span>
+        <div class="star-input" id="starInput">
+          <input type="radio" name="rating" id="s5" value="5"><label for="s5">★</label>
+          <input type="radio" name="rating" id="s4" value="4"><label for="s4">★</label>
+          <input type="radio" name="rating" id="s3" value="3"><label for="s3">★</label>
+          <input type="radio" name="rating" id="s2" value="2"><label for="s2">★</label>
+          <input type="radio" name="rating" id="s1" value="1"><label for="s1">★</label>
+        </div>
+        <div class="form-field">
+          <label>Your Review</label>
+          <textarea id="reviewText" placeholder="Share your experience working with Digital Structure Co. What did you order? How was the result?"></textarea>
+        </div>
+        <div class="form-submit">
+          <button class="btn-submit" id="submitBtn" onclick="submitReview()">Submit Review</button>
+          <span class="form-msg" id="formMsg"></span>
+        </div>
+      </div>
 
-  <!-- Reviews Grid -->
-  <div class="reviews-grid" id="reviewsGrid">
-    <div class="no-reviews" style="grid-column:1/-1">
-      <span class="loading-dot">.</span><span class="loading-dot" style="animation-delay:.2s">.</span><span class="loading-dot" style="animation-delay:.4s">.</span>
+      <!-- Review Controls -->
+      <div class="review-controls reveal">
+        <div class="filter-tabs">
+          <button class="filter-tab active" onclick="filterReviews('all', this)">All Reviews</button>
+          <button class="filter-tab" onclick="filterReviews('top', this)">Top Rated</button>
+          <button class="filter-tab" onclick="filterReviews('pinned', this)">Featured</button>
+        </div>
+        <span class="reviews-count" id="reviewsCount"></span>
+      </div>
+
+      <!-- Reviews Grid -->
+      <div class="reviews-grid" id="reviewsGrid">
+        <div class="no-reviews" style="grid-column:1/-1">
+          <span class="loading-dot">.</span><span class="loading-dot" style="animation-delay:.2s">.</span><span class="loading-dot" style="animation-delay:.4s">.</span>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -2006,7 +2032,10 @@ document.addEventListener('click', e => {
 });
 
 // ── REVIEWS ────────────────────────────────────────────────────────────
+const REVIEWS_MAINTENANCE_MODE = true;
+
 async function loadReviews() {
+  if (REVIEWS_MAINTENANCE_MODE) return;
   let query = sb.from('reviews')
     .select('*')
     .order('is_pinned', { ascending: false })
@@ -2130,6 +2159,7 @@ function escapeHtml(s) {
 const MY_REVIEW_KEY = 'dsc_my_review_id';
 
 async function submitReview() {
+  if (REVIEWS_MAINTENANCE_MODE) return;
   const nameEl = document.getElementById('reviewerName');
   const ratingEl = document.querySelector('input[name="rating"]:checked');
   const text = document.getElementById('reviewText').value.trim();
