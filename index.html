@@ -348,21 +348,6 @@ section { padding:7rem 4rem; }
 .review-card.hidden-review { opacity:.4;border-style:dashed; }
 .no-reviews { text-align:center;padding:4rem;color:var(--text-dim);font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-style:italic; }
 .reviews-maintenance-wrap { position:relative; }
-.reviews-maintenance-wrap .reviews-blur-target { filter:blur(6px); pointer-events:none; user-select:none; }
-.reviews-maintenance-overlay {
-  position:absolute; inset:0; z-index:5;
-  display:flex; flex-direction:column; align-items:center; justify-content:center;
-  gap:.75rem; text-align:center; padding:2rem;
-}
-.reviews-maintenance-overlay .badge {
-  font-family:'Syne',sans-serif; font-size:.68rem; letter-spacing:.15em; text-transform:uppercase;
-  color:var(--gold); border:1px solid var(--gold); padding:.6rem 1.4rem; border-radius:2px;
-  background:rgba(0,0,0,.55); backdrop-filter:blur(2px);
-}
-.reviews-maintenance-overlay .sub {
-  font-family:'Cormorant Garamond',serif; font-size:1.15rem; font-style:italic; color:var(--text-muted);
-  max-width:32rem;
-}
 
 /* Filters */
 .review-controls { display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;flex-wrap:wrap;gap:1rem; }
@@ -985,14 +970,9 @@ body { max-width:100%; }
     <p class="services-desc">Real reviews from real Discord server owners. Leave your name, a rating, and your experience below.</p>
   </div>
 
-  <!-- Reviews content — temporarily under maintenance -->
+  <!-- Reviews content -->
   <div class="reviews-maintenance-wrap">
-    <div class="reviews-maintenance-overlay">
-      <span class="badge">Under Maintenance</span>
-      <p class="sub">Client reviews are temporarily unavailable while we make improvements. Please check back soon.</p>
-    </div>
-
-    <div class="reviews-blur-target" aria-hidden="true">
+    <div class="reviews-blur-target">
       <!-- Rating Overview -->
       <div class="rating-overview reveal">
         <div class="rating-big">
@@ -2032,7 +2012,7 @@ document.addEventListener('click', e => {
 });
 
 // ── REVIEWS ────────────────────────────────────────────────────────────
-const REVIEWS_MAINTENANCE_MODE = true;
+const REVIEWS_MAINTENANCE_MODE = false;
 
 async function loadReviews() {
   if (REVIEWS_MAINTENANCE_MODE) return;
