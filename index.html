@@ -1002,6 +1002,156 @@ section:not(.hero){max-width:1360px;margin:0 auto;padding-left:48px!important;pa
 @media(prefers-reduced-motion:reduce){.bp-draw,.bp-label-v7,.bp-cycle-v7 span,.bp-marker-v7::after{animation:none!important}.bp-draw{stroke-dashoffset:0!important}.bp-label-v7{opacity:1!important;transform:none!important}.bp-cycle-v7 span{display:none}.bp-cycle-v7 span:first-child{display:block;opacity:1!important;transform:none!important}}
 </style>
 
+
+<style id="v7-layout-fixes">
+/* ================================================================
+   V7.1 — RESPONSIVE POLISH FIXES
+   - turns the header CTA into a complete button (not a divider/tab)
+   - rebuilds the process steps as a compact editorial timeline
+   - prevents narrow-screen clipping and inherited fixed widths
+================================================================ */
+.nav-cta{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  min-height:36px!important;
+  padding:.66rem .95rem!important;
+  border:1px solid var(--v7-cream)!important;
+  border-radius:2px!important;
+  background:var(--v7-cream)!important;
+  color:#0d0d0c!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+  box-shadow:none!important;
+}
+.nav-cta:hover{
+  background:var(--v7-brass)!important;
+  border-color:var(--v7-brass)!important;
+  color:#0d0d0c!important;
+  transform:none!important;
+}
+
+/* Process block */
+.why-visual{
+  padding:30px!important;
+  overflow:visible!important;
+}
+.why-visual::before{display:none!important}
+.why-visual .section-eyebrow{
+  display:block!important;
+  margin:0 0 16px!important;
+  white-space:nowrap!important;
+}
+.workflow-steps{
+  position:relative!important;
+  display:flex!important;
+  flex-direction:column!important;
+  width:100%!important;
+  min-width:0!important;
+}
+.workflow-steps::before{
+  content:'';
+  position:absolute;
+  left:13px;
+  top:29px;
+  bottom:29px;
+  width:1px;
+  background:var(--v7-line-2);
+  pointer-events:none;
+}
+.wf-step{
+  position:relative!important;
+  display:grid!important;
+  grid-template-columns:42px minmax(0,1fr)!important;
+  align-items:start!important;
+  gap:14px!important;
+  width:100%!important;
+  min-width:0!important;
+  padding:18px 0!important;
+  border-bottom:1px solid var(--v7-line)!important;
+}
+.wf-step:last-child{border-bottom:0!important}
+.wf-num{
+  position:relative!important;
+  z-index:1!important;
+  display:grid!important;
+  place-items:center!important;
+  width:28px!important;
+  min-width:28px!important;
+  height:28px!important;
+  padding:0!important;
+  margin:0!important;
+  border:1px solid var(--v7-line-2)!important;
+  border-radius:2px!important;
+  background:var(--v7-bg)!important;
+  color:var(--v7-brass)!important;
+  font:650 .58rem/1 ui-monospace,SFMono-Regular,Menlo,monospace!important;
+  text-align:center!important;
+}
+.wf-content{
+  width:auto!important;
+  min-width:0!important;
+  max-width:none!important;
+}
+.wf-content h4{
+  margin:1px 0 6px!important;
+  color:var(--v7-cream)!important;
+  font-family:Inter,sans-serif!important;
+  font-size:.82rem!important;
+  font-weight:650!important;
+  line-height:1.25!important;
+  letter-spacing:-.015em!important;
+  overflow-wrap:anywhere!important;
+}
+.wf-content p{
+  margin:0!important;
+  max-width:560px!important;
+  color:#858078!important;
+  font-size:.74rem!important;
+  line-height:1.62!important;
+  overflow-wrap:anywhere!important;
+}
+.mobile-order-link{
+  margin-top:4px!important;
+  border:1px solid var(--v7-line-2)!important;
+  background:#14130f!important;
+  color:#d7bd88!important;
+  text-align:center!important;
+  font-weight:700!important;
+}
+
+@media(max-width:1050px) and (min-width:701px){
+  .nav-cta{padding:.62rem .82rem!important;font-size:.66rem!important}
+  .why-visual{padding:28px!important}
+}
+@media(max-width:700px){
+  .nav-cta{display:none!important}
+  .why-grid{gap:34px!important}
+  .why-visual{
+    width:100%!important;
+    min-width:0!important;
+    padding:22px 18px!important;
+    overflow:hidden!important;
+  }
+  .why-visual .section-eyebrow{margin-bottom:12px!important}
+  .workflow-steps::before{left:12px;top:27px;bottom:27px}
+  .wf-step{
+    grid-template-columns:38px minmax(0,1fr)!important;
+    gap:11px!important;
+    padding:16px 0!important;
+  }
+  .wf-num{width:26px!important;min-width:26px!important;height:26px!important}
+  .wf-content h4{font-size:.79rem!important}
+  .wf-content p{font-size:.72rem!important;line-height:1.58!important}
+}
+@media(max-width:360px){
+  .why-visual{padding:20px 14px!important}
+  .wf-step{grid-template-columns:34px minmax(0,1fr)!important;gap:9px!important}
+  .wf-num{width:24px!important;min-width:24px!important;height:24px!important}
+  .workflow-steps::before{left:11px}
+}
+</style>
+
 </head>
 <body>
 
@@ -1069,6 +1219,7 @@ section:not(.hero){max-width:1360px;margin:0 auto;padding-left:48px!important;pa
   <a href="#tracker" onclick="closeMobileMenu()">Project Tracker</a>
   <a href="#process" onclick="closeMobileMenu()">Process</a>
   <a href="#faq" onclick="closeMobileMenu()">FAQ</a>
+  <a href="#" class="mobile-order-link" onclick="closeMobileMenu(); openPackageBuilder(); return false;">Order Now</a>
 </div>
 
 <!-- HERO -->
