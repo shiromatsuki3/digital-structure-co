@@ -256,6 +256,18 @@ body{background:#0a0a09!important;font-family:Inter,system-ui,sans-serif!importa
 @media(max-width:700px){#dashboardRoot{padding-left:0!important;padding-top:64px!important}.admin-nav{position:fixed!important;top:0!important;left:0!important;right:0!important;bottom:auto!important;width:100%!important;height:64px!important;padding:0 14px!important;display:flex!important;flex-direction:row!important;align-items:center!important;border-right:0!important;border-bottom:1px solid var(--border)!important;overflow:visible!important}.admin-nav>div:first-child{border:0!important;margin:0!important;padding:0!important}.admin-nav-right{flex-direction:row!important;margin-left:auto!important;height:64px!important;align-items:center!important;gap:1px!important}.admin-nav-link{width:42px!important}.admin-nav-user{display:none!important}.admin-wrap{padding:26px 16px 50px!important}.admin-page-header{display:grid!important;grid-template-columns:1fr auto!important;align-items:end!important}.admin-page-header::after{display:none!important}.admin-page-title{font-size:2rem!important}.stats-grid{grid-template-columns:repeat(2,1fr)!important}.stats-grid-secondary .stat-card:first-child{grid-column:1/-1!important}.analytics-section{padding:18px 12px!important}.projects-toolbar{display:block!important}.toolbar-controls{margin-top:10px!important;display:grid!important;grid-template-columns:1fr auto!important}.search-input{min-width:0!important;width:100%!important}.projects-grid{grid-template-columns:1fr!important}}
 </style>
 
+
+<!-- Consistent admin identity -->
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<style id="dsc-admin-brand">
+.admin-nav-logo{display:inline-flex!important;align-items:center!important;gap:10px!important}
+.admin-nav-logo::before{display:none!important;content:none!important}
+.admin-nav-logo .admin-brand-mark{width:32px;height:32px;display:block;flex:none;border-radius:4px}
+@media(max-width:1050px){.admin-nav-logo .admin-brand-mark{width:36px;height:36px;margin:0 auto!important}}
+@media(max-width:700px){.admin-nav-logo .admin-brand-mark{width:35px;height:35px}}
+</style>
+<script src="assets/supabase-config.js"></script>
+<link rel="stylesheet" href="assets/admin-design.css">
 </head>
 <body>
 
@@ -263,9 +275,13 @@ body{background:#0a0a09!important;font-family:Inter,system-ui,sans-serif!importa
      GATE — shown until we know the user is a logged-in admin
 ═══════════════════════════════════════════════════════════════ -->
 <div id="gateScreen" class="gate-screen">
-  <div class="gate-icon">◈</div>
+  <div class="gate-card">
+  <div class="gate-icon"><img src="assets/dsc-logo.svg" alt="Digital Structure Co."></div>
+  <h1 class="gate-heading">Your studio workspace.</h1>
   <div class="gate-text" id="gateText">Checking your session…</div>
   <div id="gateAction"></div>
+  <a class="gate-return" href="/home">← Back to website</a>
+  </div>
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════════
@@ -275,13 +291,13 @@ body{background:#0a0a09!important;font-family:Inter,system-ui,sans-serif!importa
 
   <nav class="admin-nav">
     <div style="display:flex;align-items:center;">
-      <a href="./" class="admin-nav-logo">Digital Structure <span>Co.</span></a>
+      <a href="/home" class="admin-nav-logo" aria-label="Digital Structure Co. home"><img class="admin-brand-mark" src="assets/dsc-logo.svg" width="32" height="32" alt="">Digital Structure <span>Co.</span></a>
       <span class="admin-nav-tag">Admin</span>
     </div>
     <div class="admin-nav-right">
       <a href="#" class="admin-nav-link active" id="navTabProjects" onclick="switchTab('projects');return false;">Projects</a>
       <a href="#" class="admin-nav-link" id="navTabPortfolio" onclick="switchTab('portfolio');return false;">Portfolio</a>
-      <a href="./" class="admin-nav-link">← Site</a>
+      <a href="/home" class="admin-nav-link">← Site</a>
       <div class="admin-nav-user">
         <img class="admin-nav-avatar" id="navAvatar" src="" alt="">
         <span class="admin-nav-name" id="navName"></span>
@@ -296,6 +312,7 @@ body{background:#0a0a09!important;font-family:Inter,system-ui,sans-serif!importa
       <div>
         <span class="section-eyebrow">Operations / Projects</span>
         <h1 class="admin-page-title">Project <em>Desk</em></h1>
+        <p class="desk-intro">Keep every project, deadline, and delivery in view.</p>
       </div>
       <button class="btn-submit" onclick="openProjectForm()">New project</button>
     </div>
@@ -361,6 +378,7 @@ body{background:#0a0a09!important;font-family:Inter,system-ui,sans-serif!importa
       <div>
         <span class="section-eyebrow">Portfolio Management</span>
         <h1 class="admin-page-title">Public <em>Showcase</em></h1>
+        <p class="desk-intro">Manage selected work and choose what appears on your website.</p>
       </div>
       <button class="btn-submit" onclick="openPortfolioForm()">+ Add Project</button>
     </div>
@@ -567,14 +585,15 @@ body{background:#0a0a09!important;font-family:Inter,system-ui,sans-serif!importa
   </div>
 </div>
 
+<script src="assets/discord-profile.js"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════════
 // SUPABASE CONFIG — same project as index.html (anon public key only;
 // all write/read authorization is enforced server-side via RLS, never
 // trusted from this client code alone)
 // ═══════════════════════════════════════════════════════════════════
-const SUPABASE_URL = 'https://davnezybsrqssmjmpcbe.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRhdm5lenlic3Jxc3Ntam1wY2JlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ5OTk1MjUsImV4cCI6MjEwMDU3NTUyNX0.MAd6N9pat4oO61cYSVel7xgP3bRmlZdGqKWg27z_lYA';
+const SUPABASE_URL = window.DSC_SUPABASE.url;
+const SUPABASE_ANON_KEY = window.DSC_SUPABASE.publicKey;
 
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   auth: { redirectTo: window.location.origin + window.location.pathname }
@@ -615,7 +634,7 @@ async function initAuthGate() {
   }
 
   currentUser = session.user;
-  currentProfile = await getOrCreateProfile(currentUser.id);
+  currentProfile = await getOrCreateProfile(currentUser.id, session);
 
   if (!currentProfile || !currentProfile.is_admin) {
     showDeniedGate();
@@ -649,27 +668,11 @@ async function loginWithDiscord() {
 
 async function adminLogout() {
   await sb.auth.signOut();
-  window.location.href = './';
+  window.location.href = '/home';
 }
 
-async function getOrCreateProfile(userId) {
-  const { data: existing } = await sb.from('profiles').select('*').eq('id', userId).maybeSingle();
-  if (existing) return existing;
-
-  const { data: { user } } = await sb.auth.getUser();
-  if (!user) return null;
-  const metadata = user.user_metadata || {};
-
-  const newProfile = {
-    id: user.id,
-    username: metadata.preferred_username || metadata.user_name || metadata.name || user.email,
-    display_name: metadata.full_name || metadata.name || metadata.preferred_username || metadata.user_name,
-    avatar_url: metadata.avatar_url || '',
-    discord_id: metadata.provider_id || metadata.sub || null,
-    is_admin: false
-  };
-  const { data } = await sb.from('profiles').insert(newProfile).select().single();
-  return data;
+async function getOrCreateProfile(userId, session) {
+  return DiscordProfile.load(sb, session, Boolean(session?.provider_token));
 }
 
 function showDashboard() {
@@ -690,6 +693,12 @@ function switchTab(tab) {
   document.getElementById('navTabPortfolio').classList.toggle('active', tab === 'portfolio');
 }
 
+DiscordProfile.watch(sb, profile => {
+  if (currentUser?.id !== profile.id) return;
+  currentProfile = profile;
+  document.getElementById('navAvatar').src = profile.avatar_url;
+  document.getElementById('navName').textContent = profile.display_name || profile.username;
+});
 initAuthGate();
 
 // ═══════════════════════════════════════════════════════════════════
