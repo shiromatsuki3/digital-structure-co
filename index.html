@@ -1152,6 +1152,48 @@ section:not(.hero){max-width:1360px;margin:0 auto;padding-left:48px!important;pa
 }
 </style>
 
+
+<!-- Digital Structure Co. identity: self-hosted vector branding -->
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<style id="dsc-brand-additions">
+.nav-logo{display:inline-flex!important;align-items:center!important;gap:11px!important;white-space:nowrap!important}
+.nav-logo .site-brand-mark{width:38px;height:38px;display:block;flex:none;border-radius:6px}
+.nav-logo::before{content:none!important;display:none!important}
+.footer-brand{display:inline-flex;align-items:center;gap:12px}
+.footer-brand .site-brand-mark{width:33px;height:33px;display:block;flex:none;border-radius:5px}
+.brand-banner{max-width:1264px;width:calc(100% - 96px);margin:4px auto 92px;padding:0;position:relative}
+.brand-banner picture,.brand-banner img{display:block;width:100%;height:auto}
+.brand-banner picture{border:1px solid rgba(185,154,92,.3);background:#10100f}
+.brand-banner::before{content:'02 / STUDIO IDENTITY';display:block;margin:0 0 20px;font:600 .64rem/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.1em;color:#776e5c}
+.brand-banner img{object-fit:cover}
+.brand-banner .brand-banner-credit{display:flex;align-items:center;justify-content:space-between;margin-top:14px;color:#716a5d;font:.62rem/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.07em}
+@media(max-width:1050px){.brand-banner{width:calc(100% - 68px);margin-bottom:70px}}
+@media(max-width:700px){.nav-logo .site-brand-mark{width:33px;height:33px}.nav-logo{font-size:0!important;gap:0!important}.nav-logo span{display:none!important}.brand-banner{width:calc(100% - 36px);margin:0 auto 68px}.brand-banner::before{font-size:.58rem;margin-bottom:15px}.brand-banner .brand-banner-credit{font-size:.55rem;line-height:1.5;gap:12px}.footer-brand .site-brand-mark{width:30px;height:30px}}
+</style>
+
+<style id="studio-polish">
+html.scroll-easing{scroll-behavior:auto!important}
+/* Unified trust strip: equal insets and no inherited card backgrounds. */
+.stats{width:calc(100% - 96px)!important;max-width:1264px!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:0!important;padding:0!important;margin:0 auto!important}
+.stats .stat{display:flex;flex-direction:column;justify-content:center;align-items:flex-start;min-height:160px;padding:32px 36px!important;background:transparent!important;border-radius:0!important;box-shadow:none!important;border:0!important}
+.stats .stat+.stat{border-left:1px solid var(--v7-line)!important}
+.stats .stat-num{font-size:clamp(2rem,3vw,2.65rem)!important;line-height:1.15!important;font-variant-numeric:tabular-nums}
+.stats .stat-label{font-size:.72rem!important;color:#a39c90!important;margin-top:10px}
+.stats .stat-stars{margin-top:8px;gap:4px}
+.hero-blueprint-v7{background:radial-gradient(ellipse at 60% 40%,rgba(185,154,92,.055),transparent 70%),#0b0b0a}
+.hero-sub,.services-desc,.service-desc,.card-text,.portfolio-card-desc{color:#aaa398!important}
+.section-eyebrow{color:#b99a5c!important}
+.service-card,.price-card,.review-card,.portfolio-card,.tracker-card{transition:background .2s,border-color .2s!important}
+.service-card:hover,.price-card:hover,.portfolio-card:hover,.tracker-card:hover{background:#14130f!important;border-color:rgba(185,154,92,.32)!important}
+.price-card.highlight{background:linear-gradient(180deg,rgba(185,154,92,.07),transparent)!important}
+.faq-item:has(.faq-answer.open){background:rgba(185,154,92,.04)}
+a:focus-visible,button:focus-visible{outline:2px solid #b99a5c;outline-offset:5px}
+::selection{background:#b99a5c;color:#0a0a09}
+@media(max-width:1050px){.stats{width:calc(100% - 68px)!important}.stats .stat{padding:28px!important}}
+@media(max-width:700px){.stats{width:calc(100% - 36px)!important;grid-template-columns:1fr!important}.stats .stat{min-height:126px;padding:24px!important}.stats .stat+.stat{border-left:0!important;border-top:1px solid var(--v7-line)!important}.stats .stat-num{font-size:2.1rem!important}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto!important}*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+<script src="assets/supabase-config.js"></script>
 </head>
 <body>
 
@@ -1163,7 +1205,7 @@ section:not(.hero){max-width:1360px;margin:0 auto;padding-left:48px!important;pa
 
 <!-- NAV -->
 <nav>
-  <a href="#" class="nav-logo">Digital <span>Structure</span> Co.</a>
+  <a href="/home" class="nav-logo" aria-label="Digital Structure Co. home"><img class="site-brand-mark" src="assets/dsc-logo.svg" width="38" height="38" alt="">Digital <span>Structure</span> Co.</a>
   <ul class="nav-links">
     <li><a href="#services">Services</a></li>
     <li><a href="#pricing">Pricing</a></li>
@@ -1204,7 +1246,7 @@ section:not(.hero){max-width:1360px;margin:0 auto;padding-left:48px!important;pa
         <a href="#reviews" onclick="closeDropdown()">My Review</a>
         <a href="#" onclick="openAdminPanel()" id="adminPanelLink" style="display:none">Admin Panel ⚙</a>
         <a href="#" onclick="openPortfolioAdmin()" id="portfolioAdminLink" style="display:none">Portfolio Admin ◈</a>
-        <a href="admin/" id="projectDashboardLink" style="display:none">Project Dashboard ◈</a>
+        <a href="/admin" id="projectDashboardLink" style="display:none">Project Dashboard ◈</a>
         <button onclick="logout()">Sign Out</button>
       </div>
     </div>
@@ -1284,6 +1326,15 @@ section:not(.hero){max-width:1360px;margin:0 auto;padding-left:48px!important;pa
     <div class="bp-foot-v7"><span>Blueprint, not template.</span><span class="bp-marker-v7"></span></div>
   </div>
 </section>
+
+<!-- BRAND BANNER ? responsive local vector graphics -->
+<div class="brand-banner" aria-label="Digital Structure Co. brand artwork">
+  <picture>
+    <source media="(max-width: 700px)" srcset="assets/dsc-banner-mobile.svg" type="image/svg+xml">
+    <img src="assets/dsc-banner.svg" alt="Digital Structure Co. ? Your space. Your standard. Discord communities, thoughtfully designed." width="1680" height="560" loading="lazy" decoding="async">
+  </picture>
+  <div class="brand-banner-credit"><span>DIGITAL STRUCTURE CO. ? BRAND SYSTEM</span><span>DESIGNED FOR COMMUNITY</span></div>
+</div>
 
 <!-- MARQUEE -->
 <div class="marquee-wrap">
@@ -1683,7 +1734,7 @@ section:not(.hero){max-width:1360px;margin:0 auto;padding-left:48px!important;pa
 
 <!-- FOOTER -->
 <footer>
-  <div class="footer-brand">Digital <span>Structure</span> Co.</div>
+  <div class="footer-brand"><img class="site-brand-mark" src="assets/dsc-logo.svg" width="33" height="33" alt="">Digital <span>Structure</span> Co.</div>
   <div class="footer-copy">© 2026 shiro.143 · All rights reserved</div>
   <div class="footer-links">
     <a href="#portfolio">Portfolio</a>
@@ -2337,8 +2388,8 @@ function showToast(msg, type='gold') {
 CurrencyService.init();
 
 // ── SUPABASE CONFIG ────────────────────────────────────────────────────
-const SUPABASE_URL = 'https://davnezybsrqssmjmpcbe.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRhdm5lenlic3Jxc3Ntam1wY2JlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ5OTk1MjUsImV4cCI6MjEwMDU3NTUyNX0.MAd6N9pat4oO61cYSVel7xgP3bRmlZdGqKWg27z_lYA';
+const SUPABASE_URL = window.DSC_SUPABASE.url;
+const SUPABASE_ANON_KEY = window.DSC_SUPABASE.publicKey;
 const SUPABASE_READY = true;
 
 // ── SUPABASE GUARD ─────────────────────────────────────────────────────
@@ -2371,6 +2422,7 @@ if (!SUPABASE_READY) {
 <!-- ═══════════════════════════════════════════════════════════════════════
      SUPABASE — AUTH + REVIEWS (unchanged logic, existing patterns)
 ═══════════════════════════════════════════════════════════════════════ -->
+<script src="assets/discord-profile.js"></script>
 <script>
   let currentUser = null, currentProfile = null, allReviews = [], currentFilter = 'all', isAdmin = false;
 
@@ -2400,65 +2452,8 @@ async function logout() {
   showToast('Signed out.');
 }
 
-async function getProfile(userId) {
-    // Try to get existing profile
-    const { data: existing } = await sb
-        .from('profiles')
-        .select('*')
-        .eq('id', userId)
-        .maybeSingle();
-
-    if (existing) return existing;
-
-    // Get authenticated Discord user
-    const {
-        data: { user },
-        error: authError
-    } = await sb.auth.getUser();
-
-    if (authError || !user) {
-        console.error(authError);
-        return null;
-    }
-
-    const metadata = user.user_metadata || {};
-
-    const newProfile = {
-        id: user.id,
-        username:
-            metadata.preferred_username ||
-            metadata.user_name ||
-            metadata.name ||
-            user.email,
-
-        display_name:
-            metadata.full_name ||
-            metadata.name ||
-            metadata.preferred_username ||
-            metadata.user_name,
-
-        avatar_url: metadata.avatar_url || "",
-
-        discord_id:
-            metadata.provider_id ||
-            metadata.sub ||
-            null,
-
-        is_admin: false
-    };
-
-    const { data, error } = await sb
-        .from("profiles")
-        .insert(newProfile)
-        .select()
-        .single();
-
-    if (error) {
-        console.error("Failed creating profile:", error);
-        return null;
-    }
-
-    return data;
+async function getProfile(userId, session, freshLogin = false) {
+  return DiscordProfile.load(sb, session, freshLogin);
 }
 
 // The Discord login button is hidden from the public by default — see
@@ -2766,12 +2761,13 @@ function renderAdminPanel() {
 
 // ── INIT ───────────────────────────────────────────────────────────────
 async function init() {
-  sb.auth.onAuthStateChange(async (event, session) => {
+  sb.auth.onAuthStateChange((event, session) => {
+    setTimeout(async () => {
     // Discord sign-in is now only used for site-owner admin access,
     // not for leaving reviews — the review form is always open.
     if (session?.user) {
       currentUser = session.user;
-      currentProfile = await getProfile(currentUser.id);
+      currentProfile = await getProfile(currentUser.id, session, event === 'SIGNED_IN');
       isAdmin = currentProfile?.is_admin || false;
 
       updateNavUI(currentProfile);
@@ -2791,6 +2787,7 @@ async function init() {
       await loadReviews();
       renderPortfolio(); // re-render to hide admin controls
     }
+    }, 0);
   });
 
   const { data: { session } } = await sb.auth.getSession();
@@ -2804,6 +2801,11 @@ async function init() {
     .subscribe();
 }
 
+DiscordProfile.watch(sb, profile => {
+  if (currentUser?.id !== profile.id) return;
+  currentProfile = profile;
+  updateNavUI(profile);
+});
 init();
 </script>
 
@@ -3337,5 +3339,6 @@ function closeMobileMenu(){
 document.addEventListener('click',function(e){const p=document.getElementById('mobileMenuPanel'),b=document.getElementById('mobileMenuBtn');if(p&&b&&p.classList.contains('open')&&!p.contains(e.target)&&!b.contains(e.target))closeMobileMenu();});
 window.addEventListener('resize',function(){if(innerWidth>1050)closeMobileMenu();});
 </script>
+<script src="assets/smooth-scroll.js"></script>
 </body>
 </html>
