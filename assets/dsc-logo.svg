@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128" role="img" aria-label="Digital Structure Co. icon">
+<defs><linearGradient id="b" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#181713"/><stop offset="1" stop-color="#090a09"/></linearGradient></defs>
+<rect x="1" y="1" width="126" height="126" rx="19" fill="url(#b)" stroke="#66583d" stroke-width="2"/>
+<path d="M16 37V16H37 M91 16H112V37 M112 91V112H91 M37 112H16V91" stroke="#b99a5c" stroke-width="2.8" fill="none"/>
+<path d="M16 64H27 M101 64H112 M64 16V27 M64 101V112" stroke="#746345" stroke-width="1.5"/>
+<text x="17" y="82" font-family="Arial,Helvetica,sans-serif" font-size="54" font-weight="700" letter-spacing="-6" fill="#f2ede4">D<tspan fill="#c9ac73">S</tspan></text>
+<path d="M36 93H92" stroke="#b99a5c" stroke-width="1.6"/>
+</svg>
